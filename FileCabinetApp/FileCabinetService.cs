@@ -80,5 +80,33 @@ namespace FileCabinetApp
         }
 
         public int GetStat() => this.list.Count;
+
+        public void EditRecord(int id, string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
+        {
+            try
+            {
+                if (id > this.list.Count || id < 0)
+                {
+                    throw new ArgumentException("There is no such a record");
+                }
+
+                var record = new FileCabinetRecord
+                {
+                    Id = id,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    DateOfBirth = dateOfBirth,
+                    Age = age,
+                    FavouriteNumeral = favouriteNumeral,
+                    Income = income,
+                };
+
+                this.list[id - 1] = record;
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine($"#{id} record not found");
+            }
+        }
     }
 }
