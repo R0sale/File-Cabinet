@@ -10,6 +10,12 @@ namespace FileCabinetApp
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+
+        private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
+
         public int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
         {
             try
@@ -56,6 +62,37 @@ namespace FileCabinetApp
                 };
 
                 this.list.Add(record);
+
+                foreach (var firstname in this.firstNameDictionary)
+                {
+                    if (firstName == firstname.Key)
+                    {
+                        firstname.Value.Add(record);
+                        return record.Id;
+                    }
+                }
+
+                foreach (var lastname in this.lastNameDictionary)
+                {
+                    if (lastName == lastname.Key)
+                    {
+                        lastname.Value.Add(record);
+                        return record.Id;
+                    }
+                }
+
+                foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+                {
+                    if (dateOfBirth == dateOfBirthFromDictionary.Key)
+                    {
+                        dateOfBirthFromDictionary.Value.Add(record);
+                        return record.Id;
+                    }
+                }
+
+                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>() { record });
+                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>() { record });
+                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>() { record });
                 Console.WriteLine($"Record #{this.GetStat()} is created.");
 
                 return record.Id;
@@ -90,6 +127,16 @@ namespace FileCabinetApp
                     throw new ArgumentException("There is no such a record");
                 }
 
+                if (string.IsNullOrWhiteSpace(firstName) || firstName.Length < 2 || firstName.Length > 60)
+                {
+                    throw new ArgumentException("Exception because of the incorrect first name format");
+                }
+
+                if (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60)
+                {
+                    throw new ArgumentException("Exception because of the incorrect last name format");
+                }
+
                 var record = new FileCabinetRecord
                 {
                     Id = id,
@@ -102,11 +149,88 @@ namespace FileCabinetApp
                 };
 
                 this.list[id - 1] = record;
+
+                foreach (var firstname in this.firstNameDictionary)
+                {
+                    if (firstName == firstname.Key)
+                    {
+                        firstname.Value.Clear();
+                        firstname.Value.Add(record);
+                        return;
+                    }
+                }
+
+                foreach (var lastname in this.lastNameDictionary)
+                {
+                    if (lastName == lastname.Key)
+                    {
+                        lastname.Value.Clear();
+                        lastname.Value.Add(record);
+                        return;
+                    }
+                }
+
+                foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+                {
+                    if (dateOfBirth == dateOfBirthFromDictionary.Key)
+                    {
+                        dateOfBirthFromDictionary.Value.Clear();
+                        dateOfBirthFromDictionary.Value.Add(record);
+                        return;
+                    }
+                }
+
+                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>() { record });
+                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>() { record });
+                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>() { record });
             }
             catch (ArgumentException)
             {
                 Console.WriteLine($"#{id} record not found");
             }
+        }
+
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+            foreach (var firstname in this.firstNameDictionary)
+            {
+                if (firstname.Key.Equals(firstName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return firstname.Value.ToArray();
+                }
+            }
+
+            return Array.Empty<FileCabinetRecord>();
+        }
+
+        public FileCabinetRecord[] FindByLastName(string lastname)
+        {
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+            foreach (var lastName in this.lastNameDictionary)
+            {
+                if (lastName.Key.Equals(lastname, StringComparison.OrdinalIgnoreCase))
+                {
+                    return lastName.Value.ToArray();
+                }
+            }
+
+            return Array.Empty<FileCabinetRecord>();
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
+        {
+            List<FileCabinetRecord> records = new List<FileCabinetRecord>();
+
+            foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+            {
+                if (dateOfBirthFromDictionary.Key == dateOfBirth)
+                {
+                    return dateOfBirthFromDictionary.Value.ToArray();
+                }
+            }
+
+            return Array.Empty<FileCabinetRecord>();
         }
     }
 }
