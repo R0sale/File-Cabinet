@@ -20,6 +20,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
+            new Tuple<string, Action<string>>("edit", Edit),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -29,6 +30,7 @@ namespace FileCabinetApp
             new string[] { "stat", "shows the number of records", "The 'stat' command shows the number of records" },
             new string[] { "create", "creates a new record", "The 'create' command creates a new record" },
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
+            new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
         };
 
         public static void Main(string[] args)
@@ -113,49 +115,60 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            string? input;
+            string? firstname;
 
-            Console.Write("First name: ");
+            do
+            {
+                Console.Write("First name: ");
+                firstname = Console.ReadLine();
+            }
+            while (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60);
 
-            input = Console.ReadLine();
+            string? lastname;
 
-            string? firstname = input;
-
-            Console.Write("last name: ");
-
-            input = Console.ReadLine();
-
-            string? lastname = input;
-
-            Console.Write("Date of birth: ");
-
-            input = Console.ReadLine();
+            do
+            {
+                Console.Write("last name: ");
+                lastname = Console.ReadLine();
+            }
+            while (string.IsNullOrWhiteSpace(lastname) || lastname.Length < 2 || lastname.Length > 60);
 
             DateTime dateOfBirth;
-            DateTime.TryParseExact(input, "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
 
-            Console.Write("Age: ");
-
-            input = Console.ReadLine();
+            do
+            {
+                Console.Write("Date of birth: ");
+                DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
+            }
+            while (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0);
 
             short age;
-            short.TryParse(input, null, out age);
 
-            Console.Write("Favourite numeral: ");
-
-            input = Console.ReadLine();
+            do
+            {
+                Console.Write("Age: ");
+                short.TryParse(Console.ReadLine(), null, out age);
+            }
+            while (age > 100 || age < 0);
 
             char favouriteNumeral;
-            _ = char.TryParse(input, out favouriteNumeral);
+            do
+            {
+                Console.Write("Favourite numeral: ");
+                _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
+            }
+            while (favouriteNumeral > '9' || favouriteNumeral < '0');
 
-            Console.Write("Income: ");
-
-            input = Console.ReadLine();
             decimal income;
-            _ = decimal.TryParse(input, out income);
+
+            do
+            {
+                Console.Write("Income: ");
+                _ = decimal.TryParse(Console.ReadLine(), out income);
+            }
+            while (income > 2000000 || income < 350);
 
             fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth, age, favouriteNumeral, income);
-            Console.WriteLine($"Record #{fileCabinetService.GetStat()} is created.");
         }
 
         private static void List(string parameters)
@@ -165,6 +178,85 @@ namespace FileCabinetApp
             foreach (var record in records)
             {
                 Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
+            }
+        }
+
+        private static void Edit(string parameters)
+        {
+            int numberOfTheRecord;
+
+            if (string.IsNullOrEmpty(parameters))
+            {
+                Console.WriteLine("Write the parameters in appropriate way");
+                return;
+            }
+
+            if (!int.TryParse(parameters, out numberOfTheRecord))
+            {
+                Console.WriteLine("Write the parameters in appropriate way");
+                return;
+            }
+
+            if (numberOfTheRecord <= fileCabinetService.GetStat())
+            {
+                string? firstname;
+
+                do
+                {
+                    Console.Write("First name: ");
+                    firstname = Console.ReadLine();
+                }
+                while (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60);
+
+                string? lastName;
+
+                do
+                {
+                    Console.Write("Last name: ");
+                    lastName = Console.ReadLine();
+                }
+                while (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60);
+
+                DateTime dateOfBirth;
+
+                do
+                {
+                    Console.Write("Date of birth: ");
+                    DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
+                }
+                while (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0);
+
+                char favouriteNumeral;
+                do
+                {
+                    Console.Write("Favourite numeral: ");
+                    _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
+                }
+                while (favouriteNumeral > '9' || favouriteNumeral < '0');
+
+                short age;
+
+                do
+                {
+                    Console.Write("Age: ");
+                    short.TryParse(Console.ReadLine(), null, out age);
+                }
+                while (age > 100 || age < 0);
+
+                decimal income;
+
+                do
+                {
+                    Console.Write("Income: ");
+                    _ = decimal.TryParse(Console.ReadLine(), out income);
+                }
+                while (income > 2000000 || income < 350);
+
+                fileCabinetService.EditRecord(numberOfTheRecord, firstname, lastName, dateOfBirth, age, favouriteNumeral, income);
+            }
+            else
+            {
+                Console.WriteLine($"#{numberOfTheRecord} record is not found.");
             }
         }
     }
