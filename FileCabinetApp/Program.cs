@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.Metrics;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -12,7 +13,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static FileCabinetCustomService fileCabinetService = new FileCabinetCustomService();
 
         private static bool isRunning = true;
 
@@ -124,70 +125,44 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            string? firstname;
-
+            int counter = 0;
             do
             {
                 Console.Write("First name: ");
-                firstname = Console.ReadLine();
-            }
-            while (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60);
+                string? firstname = Console.ReadLine();
 
-            string? lastname;
-
-            do
-            {
                 Console.Write("last name: ");
-                lastname = Console.ReadLine();
-            }
-            while (string.IsNullOrWhiteSpace(lastname) || lastname.Length < 2 || lastname.Length > 60);
+                string? lastname = Console.ReadLine();
 
-            DateTime dateOfBirth;
-
-            do
-            {
+                DateTime dateOfBirth;
                 Console.Write("Date of birth: ");
                 DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
-            }
-            while (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0);
 
-            short age;
-
-            do
-            {
+                short age;
                 Console.Write("Age: ");
                 short.TryParse(Console.ReadLine(), null, out age);
-            }
-            while (age > 100 || age < 0);
 
-            char favouriteNumeral;
-            do
-            {
+                char favouriteNumeral;
                 Console.Write("Favourite numeral: ");
                 _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
-            }
-            while (favouriteNumeral > '9' || favouriteNumeral < '0');
 
-            decimal income;
-
-            do
-            {
+                decimal income;
                 Console.Write("Income: ");
                 _ = decimal.TryParse(Console.ReadLine(), out income);
+
+                ParameterObject obj = new ParameterObject()
+                {
+                    FirstName = firstname,
+                    LastName = lastname,
+                    DateOfBirth = dateOfBirth,
+                    Age = age,
+                    FavouriteNumeral = favouriteNumeral,
+                    Income = income,
+                };
+
+                counter = fileCabinetService.CreateRecord(obj);
             }
-            while (income > 2000000 || income < 350);
-
-            ParameterObject obj = new ParameterObject()
-            {
-                FirstName = firstname,
-                LastName = lastname,
-                DateOfBirth = dateOfBirth,
-                Age = age,
-                FavouriteNumeral = favouriteNumeral,
-                Income = income,
-            };
-
-            fileCabinetService.CreateRecord(obj);
+            while (counter < 1);
         }
 
         private static void List(string parameters)
@@ -202,91 +177,66 @@ namespace FileCabinetApp
 
         private static void Edit(string parameters)
         {
-            int numberOfTheRecord;
-
-            if (string.IsNullOrEmpty(parameters))
+            int counter = 0;
+            do
             {
-                Console.WriteLine("Write the parameters in appropriate way");
-                return;
-            }
+                int numberOfTheRecord;
 
-            if (!int.TryParse(parameters, out numberOfTheRecord))
-            {
-                Console.WriteLine("Write the parameters in appropriate way");
-                return;
-            }
+                if (string.IsNullOrEmpty(parameters))
+                {
+                    Console.WriteLine("Write the parameters in appropriate way");
+                    return;
+                }
 
-            if (numberOfTheRecord <= fileCabinetService.GetStat())
-            {
-                string? firstname;
+                if (!int.TryParse(parameters, out numberOfTheRecord))
+                {
+                    Console.WriteLine("Write the parameters in appropriate way");
+                    return;
+                }
 
-                do
+                if (numberOfTheRecord <= fileCabinetService.GetStat())
                 {
                     Console.Write("First name: ");
-                    firstname = Console.ReadLine();
-                }
-                while (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60);
+                    string? firstname = Console.ReadLine();
 
-                string? lastname;
-
-                do
-                {
                     Console.Write("Last name: ");
-                    lastname = Console.ReadLine();
-                }
-                while (string.IsNullOrWhiteSpace(lastname) || lastname.Length < 2 || lastname.Length > 60);
+                    string? lastname = Console.ReadLine();
 
-                DateTime dateOfBirth;
-
-                do
-                {
+                    DateTime dateOfBirth;
                     Console.Write("Date of birth: ");
                     DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
-                }
-                while (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0);
 
-                char favouriteNumeral;
-                do
-                {
+                    char favouriteNumeral;
                     Console.Write("Favourite numeral: ");
                     _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
-                }
-                while (favouriteNumeral > '9' || favouriteNumeral < '0');
 
-                short age;
-
-                do
-                {
+                    short age;
                     Console.Write("Age: ");
                     short.TryParse(Console.ReadLine(), null, out age);
-                }
-                while (age > 100 || age < 0);
 
-                decimal income;
-
-                do
-                {
+                    decimal income;
                     Console.Write("Income: ");
                     _ = decimal.TryParse(Console.ReadLine(), out income);
+
+                    ParameterObject obj = new ParameterObject()
+                    {
+                        FirstName = firstname,
+                        LastName = lastname,
+                        DateOfBirth = dateOfBirth,
+                        Age = age,
+                        FavouriteNumeral = favouriteNumeral,
+                        Income = income,
+                    };
+
+                    counter = fileCabinetService.EditRecord(numberOfTheRecord, obj);
                 }
-                while (income > 2000000 || income < 350);
-
-                ParameterObject obj = new ParameterObject()
+                else
                 {
-                    FirstName = firstname,
-                    LastName = lastname,
-                    DateOfBirth = dateOfBirth,
-                    Age = age,
-                    FavouriteNumeral = favouriteNumeral,
-                    Income = income,
-                };
-
-                fileCabinetService.EditRecord(numberOfTheRecord, obj);
+                    Console.WriteLine($"#{numberOfTheRecord} record is not found.");
+                    break;
+                }
             }
-            else
-            {
-                Console.WriteLine($"#{numberOfTheRecord} record is not found.");
-            }
+            while (counter < 1);
         }
 
         private static void Find(string arguments)

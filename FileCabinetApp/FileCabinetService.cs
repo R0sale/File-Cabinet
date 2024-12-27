@@ -9,7 +9,7 @@ namespace FileCabinetApp
     /// <summary>
     /// FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
     /// </summary>
-    public class FileCabinetService
+    public abstract class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
@@ -28,41 +28,11 @@ namespace FileCabinetApp
         {
             try
             {
-                if (rec == null)
-                {
-                    throw new ArgumentException("The record is null");
-                }
+                this.ValidateParameters(rec);
 
-                if (string.IsNullOrWhiteSpace(rec.FirstName) || rec.FirstName.Length < 2 || rec.FirstName.Length > 60)
-                {
-                    throw new ArgumentException("Exception because of the incorrect first name format");
-                }
+                #pragma warning disable CA1062
 
-                if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < 2 || rec.LastName.Length > 60)
-                {
-                    throw new ArgumentException("Exception because of the incorrect last name format");
-                }
-
-                if (rec.DateOfBirth.CompareTo(DateTime.Now) >= 0 || rec.DateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
-                {
-                    throw new ArgumentException("Exception because of the incorrect date of birth format");
-                }
-
-                if (rec.FavouriteNumeral > '9' || rec.FavouriteNumeral < '0')
-                {
-                    throw new ArgumentException("Exception because of the incorrect favourite numeral format");
-                }
-
-                if (rec.Age > 100 || rec.Age < 0)
-                {
-                    throw new ArgumentException("Exception because of the incorrect age format");
-                }
-
-                if (rec.Income > 2000000 || rec.Income < 350)
-                {
-                    throw new ArgumentException("Exception because of the incorrect income format");
-                }
-
+                // all the pragma warnings are made, because the validation is in the ValidateParameters, so there's no need to worry about nullable rec.
                 var record = new FileCabinetRecord
                 {
                     Id = this.list.Count + 1,
@@ -73,6 +43,8 @@ namespace FileCabinetApp
                     FavouriteNumeral = rec.FavouriteNumeral,
                     Income = rec.Income,
                 };
+
+                #pragma warning restore CA1062
 
                 this.list.Add(record);
 
@@ -105,11 +77,12 @@ namespace FileCabinetApp
                         return record.Id;
                     }
                 }
-
+                #pragma warning disable CS8604
                 this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
                 this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
                 this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                 Console.WriteLine($"Record #{this.GetStat()} is created.");
+                #pragma warning restore CS8604
 
                 return record.Id;
             }
@@ -140,36 +113,28 @@ namespace FileCabinetApp
         /// This method returns the number of records.
         /// </summary>
         /// <returns>The number of records.</returns>
+        // pragma because it is the initial code.
+        #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
-
+        #pragma warning restore CA1024
         /// <summary>
         /// This method edits the record.
         /// </summary>
         /// <param name="id">Id.</param>
         /// <param name="rec">Record.</param>
-        public void EditRecord(int id, ParameterObject rec)
+        /// <returns>Return the id of the record.</returns>
+        public int EditRecord(int id, ParameterObject rec)
         {
             try
             {
                 if (id > this.list.Count || id < 0)
                 {
-                    throw new ArgumentException("There is no such a record");
+                    throw new ArgumentException($"#{id} record not found");
                 }
 
-                if (rec == null)
-                {
-                    throw new ArgumentException("The record is null");
-                }
+                this.ValidateParameters(rec);
 
-                if (string.IsNullOrWhiteSpace(rec.FirstName) || rec.FirstName.Length < 2 || rec.FirstName.Length > 60)
-                {
-                    throw new ArgumentException("Exception because of the incorrect first name format");
-                }
-
-                if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < 2 || rec.LastName.Length > 60)
-                {
-                    throw new ArgumentException("Exception because of the incorrect last name format");
-                }
+                #pragma warning disable CA1062
 
                 var record = new FileCabinetRecord
                 {
@@ -181,6 +146,7 @@ namespace FileCabinetApp
                     FavouriteNumeral = rec.FavouriteNumeral,
                     Income = rec.Income,
                 };
+                #pragma warning restore CA1062
 
                 this.list[id - 1] = record;
 
@@ -190,7 +156,7 @@ namespace FileCabinetApp
                     {
                         firstname.Value.Clear();
                         firstname.Value.Add(record);
-                        return;
+                        return id;
                     }
                 }
 
@@ -200,7 +166,7 @@ namespace FileCabinetApp
                     {
                         lastname.Value.Clear();
                         lastname.Value.Add(record);
-                        return;
+                        return id;
                     }
                 }
 
@@ -210,17 +176,21 @@ namespace FileCabinetApp
                     {
                         dateOfBirthFromDictionary.Value.Clear();
                         dateOfBirthFromDictionary.Value.Add(record);
-                        return;
+                        return id;
                     }
                 }
 
+                #pragma warning disable CS8604
                 this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
                 this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
                 this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
+                #pragma warning restore CS8604
+                return id;
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                Console.WriteLine($"#{id} record not found");
+                Console.WriteLine(e.Message);
+                return -1;
             }
         }
 
@@ -281,5 +251,11 @@ namespace FileCabinetApp
 
             return Array.Empty<FileCabinetRecord>();
         }
+
+        /// <summary>
+        /// Abstract method that will be overrided in derived classes.
+        /// </summary>
+        /// <param name="rec">Record.</param>
+        protected abstract void ValidateParameters(ParameterObject rec);
     }
 }
