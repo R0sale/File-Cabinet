@@ -134,7 +134,27 @@ namespace FileCabinetApp
             DateTime dateOfBirth;
             DateTime.TryParseExact(input, "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
 
-            fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth);
+            Console.Write("Age: ");
+
+            input = Console.ReadLine();
+
+            short age;
+            short.TryParse(input, null, out age);
+
+            Console.Write("Favourite numeral: ");
+
+            input = Console.ReadLine();
+
+            char favouriteNumeral;
+            _ = char.TryParse(input, out favouriteNumeral);
+
+            Console.Write("Income: ");
+
+            input = Console.ReadLine();
+            decimal income;
+            _ = decimal.TryParse(input, out income);
+
+            fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth, age, favouriteNumeral, income);
             Console.WriteLine($"Record #{fileCabinetService.GetStat()} is created.");
         }
 
@@ -144,7 +164,7 @@ namespace FileCabinetApp
 
             foreach (var record in records)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)} ");
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
             }
         }
     }
