@@ -27,8 +27,14 @@ namespace FileCabinetApp
 
         public FileCabinetRecord[] GetRecords()
         {
-            // TODO: добавьте реализацию метода
-            return Array.Empty<FileCabinetRecord>();
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+
+            foreach (var record in this.list)
+            {
+                result.Add(record);
+            }
+
+            return result.ToArray();
         }
 
         public int GetStat()
