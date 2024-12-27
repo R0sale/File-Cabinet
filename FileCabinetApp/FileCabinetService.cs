@@ -79,9 +79,6 @@ namespace FileCabinetApp
             return result.ToArray();
         }
 
-        public int GetStat()
-        {
-            return this.list.Count;
-        }
+        public int GetStat() => this.list.Count;
     }
 }
