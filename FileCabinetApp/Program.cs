@@ -155,7 +155,6 @@ namespace FileCabinetApp
             _ = decimal.TryParse(input, out income);
 
             fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth, age, favouriteNumeral, income);
-            Console.WriteLine($"Record #{fileCabinetService.GetStat()} is created.");
         }
 
         private static void List(string parameters)

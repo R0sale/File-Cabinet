@@ -12,20 +12,59 @@ namespace FileCabinetApp
 
         public int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
         {
-            var record = new FileCabinetRecord
+            try
             {
-                Id = this.list.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Age = age,
-                FavouriteNumeral = favouriteNumeral,
-                Income = income,
-            };
+                if (string.IsNullOrWhiteSpace(firstName) || firstName.Length < 2 || firstName.Length > 60)
+                {
+                    throw new ArgumentException("Exception because of the incorrect first name format");
+                }
 
-            this.list.Add(record);
+                if (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60)
+                {
+                    throw new ArgumentException("Exception because of the incorrect last name format");
+                }
 
-            return record.Id;
+                if (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
+                {
+                    throw new ArgumentException("Exception because of the incorrect date of birth format");
+                }
+
+                if (favouriteNumeral > '9' || favouriteNumeral < '0')
+                {
+                    throw new ArgumentException("Exception because of the incorrect favourite numeral format");
+                }
+
+                if (age > 100 || age < 0)
+                {
+                    throw new ArgumentException("Exception because of the incorrect age format");
+                }
+
+                if (income > 2000000 || income < 350)
+                {
+                    throw new ArgumentException("Exception because of the incorrect income format");
+                }
+
+                var record = new FileCabinetRecord
+                {
+                    Id = this.list.Count + 1,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    DateOfBirth = dateOfBirth,
+                    Age = age,
+                    FavouriteNumeral = favouriteNumeral,
+                    Income = income,
+                };
+
+                this.list.Add(record);
+                Console.WriteLine($"Record #{this.GetStat()} is created.");
+
+                return record.Id;
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+                return -1;
+            }
         }
 
         public FileCabinetRecord[] GetRecords()
