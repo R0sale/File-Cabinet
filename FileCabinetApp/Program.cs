@@ -21,6 +21,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
+            new Tuple<string, Action<string>>("find", Find),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -31,6 +32,7 @@ namespace FileCabinetApp
             new string[] { "create", "creates a new record", "The 'create' command creates a new record" },
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
+            new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
         };
 
         public static void Main(string[] args)
@@ -257,6 +259,82 @@ namespace FileCabinetApp
             else
             {
                 Console.WriteLine($"#{numberOfTheRecord} record is not found.");
+            }
+        }
+
+        private static void Find(string arguments)
+        {
+            try
+            {
+                string[] args = arguments.Split(' ');
+                if (args.Length != 2)
+                {
+                    throw new ArgumentException("Please write 2 arguments");
+                }
+
+                if (args[0].Equals("firstname", StringComparison.OrdinalIgnoreCase))
+                {
+                    FileCabinetRecord[] records = fileCabinetService.FindByFirstName(args[1]);
+
+                    if (records != null)
+                    {
+                        foreach (FileCabinetRecord record in records)
+                        {
+                            Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)}");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There is no such firstname in the list");
+                    }
+                }
+                else if (args[0].Equals("lastname", StringComparison.OrdinalIgnoreCase))
+                {
+                    FileCabinetRecord[] records = fileCabinetService.FindByLastName(args[1]);
+                    if (records != null)
+                    {
+                        foreach (FileCabinetRecord record in records)
+                        {
+                            Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)}");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("There is no such lastname in the list");
+                    }
+                }
+                else if (args[0].Equals("dateofbirth", StringComparison.OrdinalIgnoreCase))
+                {
+                    DateTime dateOfBirth;
+                    if (DateTime.TryParseExact(args[1], "yyyy-MMM-dd", new CultureInfo("En-en"), DateTimeStyles.None, out dateOfBirth))
+                    {
+                        FileCabinetRecord[] records = fileCabinetService.FindByDateOfBirth(dateOfBirth);
+
+                        if (records != null)
+                        {
+                            foreach (FileCabinetRecord record in records)
+                            {
+                                Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MMM-dd", new CultureInfo("En-en"))}");
+                            }
+                        }
+                        else
+                        {
+                            throw new ArgumentException("There is no such date in the list");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Please, write the date in the correct format");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("The arguments are not in appropriate way");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }
