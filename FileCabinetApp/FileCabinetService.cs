@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
+    /// </summary>
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
@@ -16,6 +19,16 @@ namespace FileCabinetApp
 
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
+        /// <summary>
+        /// This method is creating the record.
+        /// </summary>
+        /// <param name="firstName">FIrst name.</param>
+        /// <param name="lastName">Last name.</param>
+        /// <param name="dateOfBirth">Date of Birth.</param>
+        /// <param name="age">Age.</param>
+        /// <param name="favouriteNumeral">Favourite numeral.</param>
+        /// <param name="income">Income.</param>
+        /// <returns>Identify of the record.</returns>
         public int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
         {
             try
@@ -104,6 +117,10 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>
+        /// This method returns all the records.
+        /// </summary>
+        /// <returns>Array of whole the records.</returns>
         public FileCabinetRecord[] GetRecords()
         {
             List<FileCabinetRecord> result = new List<FileCabinetRecord>();
@@ -116,8 +133,22 @@ namespace FileCabinetApp
             return result.ToArray();
         }
 
+        /// <summary>
+        /// This method returns the number of records.
+        /// </summary>
+        /// <returns>The number of records.</returns>
         public int GetStat() => this.list.Count;
 
+        /// <summary>
+        /// This method edits the record.
+        /// </summary>
+        /// <param name="id">Id.</param>
+        /// <param name="firstName">First name.</param>
+        /// <param name="lastName">Last name.</param>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <param name="age">Age.</param>
+        /// <param name="favouriteNumeral">Favourite numeral.</param>
+        /// <param name="income">Income.</param>
         public void EditRecord(int id, string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
         {
             try
@@ -190,6 +221,11 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>
+        /// This method is searching for all the reords with specified name.
+        /// </summary>
+        /// <param name="firstName">First name.</param>
+        /// <returns>Array of the records with specified first names.</returns>
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
             List<FileCabinetRecord> result = new List<FileCabinetRecord>();
@@ -204,6 +240,11 @@ namespace FileCabinetApp
             return Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>
+        /// This method is searching for all the reords with specified last name.
+        /// </summary>
+        /// <param name="lastname">Last name.</param>
+        /// <returns>Array of the records with specified last names.</returns>
         public FileCabinetRecord[] FindByLastName(string lastname)
         {
             List<FileCabinetRecord> result = new List<FileCabinetRecord>();
@@ -218,6 +259,11 @@ namespace FileCabinetApp
             return Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>
+        /// This method is searching for all the reords with specified date of birth.
+        /// </summary>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <returns>Array of the records with specified date of birth.</returns>
         public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
         {
             List<FileCabinetRecord> records = new List<FileCabinetRecord>();
