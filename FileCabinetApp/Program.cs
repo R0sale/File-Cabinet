@@ -177,7 +177,17 @@ namespace FileCabinetApp
             }
             while (income > 2000000 || income < 350);
 
-            fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth, age, favouriteNumeral, income);
+            ParameterObject obj = new ParameterObject()
+            {
+                FirstName = firstname,
+                LastName = lastname,
+                DateOfBirth = dateOfBirth,
+                Age = age,
+                FavouriteNumeral = favouriteNumeral,
+                Income = income,
+            };
+
+            fileCabinetService.CreateRecord(obj);
         }
 
         private static void List(string parameters)
@@ -217,14 +227,14 @@ namespace FileCabinetApp
                 }
                 while (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60);
 
-                string? lastName;
+                string? lastname;
 
                 do
                 {
                     Console.Write("Last name: ");
-                    lastName = Console.ReadLine();
+                    lastname = Console.ReadLine();
                 }
-                while (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60);
+                while (string.IsNullOrWhiteSpace(lastname) || lastname.Length < 2 || lastname.Length > 60);
 
                 DateTime dateOfBirth;
 
@@ -261,7 +271,17 @@ namespace FileCabinetApp
                 }
                 while (income > 2000000 || income < 350);
 
-                fileCabinetService.EditRecord(numberOfTheRecord, firstname, lastName, dateOfBirth, age, favouriteNumeral, income);
+                ParameterObject obj = new ParameterObject()
+                {
+                    FirstName = firstname,
+                    LastName = lastname,
+                    DateOfBirth = dateOfBirth,
+                    Age = age,
+                    FavouriteNumeral = favouriteNumeral,
+                    Income = income,
+                };
+
+                fileCabinetService.EditRecord(numberOfTheRecord, obj);
             }
             else
             {

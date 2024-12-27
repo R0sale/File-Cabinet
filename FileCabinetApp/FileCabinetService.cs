@@ -22,43 +22,43 @@ namespace FileCabinetApp
         /// <summary>
         /// This method is creating the record.
         /// </summary>
-        /// <param name="firstName">FIrst name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of Birth.</param>
-        /// <param name="age">Age.</param>
-        /// <param name="favouriteNumeral">Favourite numeral.</param>
-        /// <param name="income">Income.</param>
+        /// <param name="rec">Record.</param>
         /// <returns>Identify of the record.</returns>
-        public int CreateRecord(string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
+        public int CreateRecord(ParameterObject rec)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(firstName) || firstName.Length < 2 || firstName.Length > 60)
+                if (rec == null)
+                {
+                    throw new ArgumentException("The record is null");
+                }
+
+                if (string.IsNullOrWhiteSpace(rec.FirstName) || rec.FirstName.Length < 2 || rec.FirstName.Length > 60)
                 {
                     throw new ArgumentException("Exception because of the incorrect first name format");
                 }
 
-                if (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60)
+                if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < 2 || rec.LastName.Length > 60)
                 {
                     throw new ArgumentException("Exception because of the incorrect last name format");
                 }
 
-                if (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
+                if (rec.DateOfBirth.CompareTo(DateTime.Now) >= 0 || rec.DateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
                 {
                     throw new ArgumentException("Exception because of the incorrect date of birth format");
                 }
 
-                if (favouriteNumeral > '9' || favouriteNumeral < '0')
+                if (rec.FavouriteNumeral > '9' || rec.FavouriteNumeral < '0')
                 {
                     throw new ArgumentException("Exception because of the incorrect favourite numeral format");
                 }
 
-                if (age > 100 || age < 0)
+                if (rec.Age > 100 || rec.Age < 0)
                 {
                     throw new ArgumentException("Exception because of the incorrect age format");
                 }
 
-                if (income > 2000000 || income < 350)
+                if (rec.Income > 2000000 || rec.Income < 350)
                 {
                     throw new ArgumentException("Exception because of the incorrect income format");
                 }
@@ -66,46 +66,49 @@ namespace FileCabinetApp
                 var record = new FileCabinetRecord
                 {
                     Id = this.list.Count + 1,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    DateOfBirth = dateOfBirth,
-                    Age = age,
-                    FavouriteNumeral = favouriteNumeral,
-                    Income = income,
+                    FirstName = rec.FirstName,
+                    LastName = rec.LastName,
+                    DateOfBirth = rec.DateOfBirth,
+                    Age = rec.Age,
+                    FavouriteNumeral = rec.FavouriteNumeral,
+                    Income = rec.Income,
                 };
 
                 this.list.Add(record);
 
                 foreach (var firstname in this.firstNameDictionary)
                 {
-                    if (firstName == firstname.Key)
+                    if (rec.FirstName == firstname.Key)
                     {
                         firstname.Value.Add(record);
+                        Console.WriteLine($"Record #{this.GetStat()} is created.");
                         return record.Id;
                     }
                 }
 
                 foreach (var lastname in this.lastNameDictionary)
                 {
-                    if (lastName == lastname.Key)
+                    if (rec.LastName == lastname.Key)
                     {
                         lastname.Value.Add(record);
+                        Console.WriteLine($"Record #{this.GetStat()} is created.");
                         return record.Id;
                     }
                 }
 
                 foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
                 {
-                    if (dateOfBirth == dateOfBirthFromDictionary.Key)
+                    if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
                     {
                         dateOfBirthFromDictionary.Value.Add(record);
+                        Console.WriteLine($"Record #{this.GetStat()} is created.");
                         return record.Id;
                     }
                 }
 
-                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>() { record });
-                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>() { record });
-                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>() { record });
+                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                 Console.WriteLine($"Record #{this.GetStat()} is created.");
 
                 return record.Id;
@@ -143,13 +146,8 @@ namespace FileCabinetApp
         /// This method edits the record.
         /// </summary>
         /// <param name="id">Id.</param>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="age">Age.</param>
-        /// <param name="favouriteNumeral">Favourite numeral.</param>
-        /// <param name="income">Income.</param>
-        public void EditRecord(int id, string? firstName, string? lastName, DateTime dateOfBirth, short age, char favouriteNumeral, decimal income)
+        /// <param name="rec">Record.</param>
+        public void EditRecord(int id, ParameterObject rec)
         {
             try
             {
@@ -158,12 +156,17 @@ namespace FileCabinetApp
                     throw new ArgumentException("There is no such a record");
                 }
 
-                if (string.IsNullOrWhiteSpace(firstName) || firstName.Length < 2 || firstName.Length > 60)
+                if (rec == null)
+                {
+                    throw new ArgumentException("The record is null");
+                }
+
+                if (string.IsNullOrWhiteSpace(rec.FirstName) || rec.FirstName.Length < 2 || rec.FirstName.Length > 60)
                 {
                     throw new ArgumentException("Exception because of the incorrect first name format");
                 }
 
-                if (string.IsNullOrWhiteSpace(lastName) || lastName.Length < 2 || lastName.Length > 60)
+                if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < 2 || rec.LastName.Length > 60)
                 {
                     throw new ArgumentException("Exception because of the incorrect last name format");
                 }
@@ -171,19 +174,19 @@ namespace FileCabinetApp
                 var record = new FileCabinetRecord
                 {
                     Id = id,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    DateOfBirth = dateOfBirth,
-                    Age = age,
-                    FavouriteNumeral = favouriteNumeral,
-                    Income = income,
+                    FirstName = rec.FirstName,
+                    LastName = rec.LastName,
+                    DateOfBirth = rec.DateOfBirth,
+                    Age = rec.Age,
+                    FavouriteNumeral = rec.FavouriteNumeral,
+                    Income = rec.Income,
                 };
 
                 this.list[id - 1] = record;
 
                 foreach (var firstname in this.firstNameDictionary)
                 {
-                    if (firstName == firstname.Key)
+                    if (rec.FirstName == firstname.Key)
                     {
                         firstname.Value.Clear();
                         firstname.Value.Add(record);
@@ -193,7 +196,7 @@ namespace FileCabinetApp
 
                 foreach (var lastname in this.lastNameDictionary)
                 {
-                    if (lastName == lastname.Key)
+                    if (rec.LastName == lastname.Key)
                     {
                         lastname.Value.Clear();
                         lastname.Value.Add(record);
@@ -203,7 +206,7 @@ namespace FileCabinetApp
 
                 foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
                 {
-                    if (dateOfBirth == dateOfBirthFromDictionary.Key)
+                    if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
                     {
                         dateOfBirthFromDictionary.Value.Clear();
                         dateOfBirthFromDictionary.Value.Add(record);
@@ -211,9 +214,9 @@ namespace FileCabinetApp
                     }
                 }
 
-                this.lastNameDictionary.Add(lastName, new List<FileCabinetRecord>() { record });
-                this.firstNameDictionary.Add(firstName, new List<FileCabinetRecord>() { record });
-                this.dateOfBirthDictionary.Add(dateOfBirth, new List<FileCabinetRecord>() { record });
+                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
             }
             catch (ArgumentException)
             {
