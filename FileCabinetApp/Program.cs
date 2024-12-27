@@ -13,7 +13,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
-        private static FileCabinetCustomService fileCabinetService = new FileCabinetCustomService();
+        private static FileCabinetService? fileCabinetService;
 
         private static bool isRunning = true;
 
@@ -45,7 +45,35 @@ namespace FileCabinetApp
         /// <param name="args">Just arguments.</param>
         public static void Main(string[] args)
         {
+            string typeOfTheRules = "default";
+
+            if (args != null)
+            {
+                if (args.Length > 0)
+                {
+                    if (args[0].StartsWith("--validation-rules=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (args[0].Split('=')[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileCabinetService = new FileCabinetCustomService();
+                            typeOfTheRules = "custom";
+                        }
+                    }
+                    else if (args[0].Equals("-v", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (args[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileCabinetService = new FileCabinetCustomService();
+                            typeOfTheRules = "custom";
+                        }
+                    }
+                }
+            }
+
+            fileCabinetService = new FileCabinetDefaultService();
+
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+            Console.WriteLine($"Using {typeOfTheRules} validation rules.");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
@@ -119,8 +147,11 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            if (fileCabinetService != null)
+            {
+                var recordsCount = Program.fileCabinetService.GetStat();
+                Console.WriteLine($"{recordsCount} record(s).");
+            }
         }
 
         private static void Create(string parameters)
@@ -160,18 +191,23 @@ namespace FileCabinetApp
                     Income = income,
                 };
 
-                counter = fileCabinetService.CreateRecord(obj);
+                if (fileCabinetService != null)
+                {
+                    counter = fileCabinetService.CreateRecord(obj);
+                }
             }
             while (counter < 1);
         }
 
         private static void List(string parameters)
         {
-            FileCabinetRecord[] records = fileCabinetService.GetRecords();
-
-            foreach (var record in records)
+            if (fileCabinetService != null)
             {
-                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
+                FileCabinetRecord[] records = fileCabinetService.GetRecords();
+                foreach (var record in records)
+                {
+                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
+                }
             }
         }
 
@@ -194,46 +230,49 @@ namespace FileCabinetApp
                     return;
                 }
 
-                if (numberOfTheRecord <= fileCabinetService.GetStat())
+                if (fileCabinetService != null)
                 {
-                    Console.Write("First name: ");
-                    string? firstname = Console.ReadLine();
-
-                    Console.Write("Last name: ");
-                    string? lastname = Console.ReadLine();
-
-                    DateTime dateOfBirth;
-                    Console.Write("Date of birth: ");
-                    DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
-
-                    char favouriteNumeral;
-                    Console.Write("Favourite numeral: ");
-                    _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
-
-                    short age;
-                    Console.Write("Age: ");
-                    short.TryParse(Console.ReadLine(), null, out age);
-
-                    decimal income;
-                    Console.Write("Income: ");
-                    _ = decimal.TryParse(Console.ReadLine(), out income);
-
-                    ParameterObject obj = new ParameterObject()
+                    if (numberOfTheRecord <= fileCabinetService.GetStat())
                     {
-                        FirstName = firstname,
-                        LastName = lastname,
-                        DateOfBirth = dateOfBirth,
-                        Age = age,
-                        FavouriteNumeral = favouriteNumeral,
-                        Income = income,
-                    };
+                        Console.Write("First name: ");
+                        string? firstname = Console.ReadLine();
 
-                    counter = fileCabinetService.EditRecord(numberOfTheRecord, obj);
-                }
-                else
-                {
-                    Console.WriteLine($"#{numberOfTheRecord} record is not found.");
-                    break;
+                        Console.Write("Last name: ");
+                        string? lastname = Console.ReadLine();
+
+                        DateTime dateOfBirth;
+                        Console.Write("Date of birth: ");
+                        DateTime.TryParseExact(Console.ReadLine(), "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
+
+                        char favouriteNumeral;
+                        Console.Write("Favourite numeral: ");
+                        _ = char.TryParse(Console.ReadLine(), out favouriteNumeral);
+
+                        short age;
+                        Console.Write("Age: ");
+                        short.TryParse(Console.ReadLine(), null, out age);
+
+                        decimal income;
+                        Console.Write("Income: ");
+                        _ = decimal.TryParse(Console.ReadLine(), out income);
+
+                        ParameterObject obj = new ParameterObject()
+                        {
+                            FirstName = firstname,
+                            LastName = lastname,
+                            DateOfBirth = dateOfBirth,
+                            Age = age,
+                            FavouriteNumeral = favouriteNumeral,
+                            Income = income,
+                        };
+
+                        counter = fileCabinetService.EditRecord(numberOfTheRecord, obj);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"#{numberOfTheRecord} record is not found.");
+                        break;
+                    }
                 }
             }
             while (counter < 1);
@@ -249,10 +288,14 @@ namespace FileCabinetApp
                     throw new ArgumentException("Please write 2 arguments");
                 }
 
+                if (fileCabinetService == null)
+                {
+                    throw new ArgumentException("The service is null");
+                }
+
                 if (args[0].Equals("firstname", StringComparison.OrdinalIgnoreCase))
                 {
                     FileCabinetRecord[] records = fileCabinetService.FindByFirstName(args[1]);
-
                     if (records != null)
                     {
                         foreach (FileCabinetRecord record in records)
