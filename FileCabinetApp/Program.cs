@@ -16,6 +16,7 @@
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
+            new Tuple<string, Action<string>>("create", Create),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -23,6 +24,7 @@
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "shows the number of records", "The 'stat' command shows the number of records" },
+            new string[] { "create", "creates a new record", "The 'create' command creates a new record" },
         };
 
         public static void Main(string[] args)
@@ -103,6 +105,32 @@
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            string? input;
+
+            Console.Write("First name: ");
+
+            input = Console.ReadLine();
+
+            string? firstname = input;
+
+            Console.Write("last name: ");
+
+            input = Console.ReadLine();
+
+            string? lastname = input;
+
+            Console.Write("Date of birth: ");
+
+            input = Console.ReadLine();
+
+            DateTime dateOfBirth;
+            DateTime.TryParseExact(input, "MM/dd/yyyy", null, System.Globalization.DateTimeStyles.None, out dateOfBirth);
+
+            fileCabinetService.CreateRecord(firstname, lastname, dateOfBirth);
         }
     }
 }
