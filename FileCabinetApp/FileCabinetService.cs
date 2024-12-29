@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,18 @@ namespace FileCabinetApp
 
         private readonly Dictionary<DateTime, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<DateTime, List<FileCabinetRecord>>();
 
+        private IRecordValidator? validator;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// constructor injection.
+        /// </summary>
+        /// <param name="validator">A validator.</param>
+        protected FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
+
         /// <summary>
         /// This method is creating the record.
         /// </summary>
@@ -29,7 +42,12 @@ namespace FileCabinetApp
         {
             try
             {
-                this.CreateValidator().ValidateParameters(rec);
+                if (this.validator == null)
+                {
+                    throw new ArgumentException("The validator is null");
+                }
+
+                this.validator.ValidateParameters(rec);
 
                 #pragma warning disable CA1062
 
@@ -133,7 +151,12 @@ namespace FileCabinetApp
                     throw new ArgumentException($"#{id} record not found");
                 }
 
-                this.CreateValidator().ValidateParameters(rec);
+                if (this.validator == null)
+                {
+                    throw new ArgumentException("The validator is null");
+                }
+
+                this.validator.ValidateParameters(rec);
 
                 #pragma warning disable CA1062
 

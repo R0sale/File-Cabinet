@@ -33,6 +33,12 @@
             Class for custom validation.
             </summary>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetCustomService"/> class.
+            Class is calling the base class constructor and send there Custom Validator object.
+            </summary>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetCustomService.CreateValidator">
             <summary>
             Creating validator by custom rules.
@@ -42,6 +48,12 @@
         <member name="T:FileCabinetApp.FileCabinetDefaultService">
             <summary>
             Class for default validation.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetDefaultService"/> class.
+            Class is calling the base class constructor and send there Default Validator object.
             </summary>
         </member>
         <member name="M:FileCabinetApp.FileCabinetDefaultService.CreateValidator">
@@ -101,6 +113,13 @@
             <summary>
             FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
             </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            constructor injection.
+            </summary>
+            <param name="validator">A validator.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
             <summary>

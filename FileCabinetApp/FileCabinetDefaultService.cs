@@ -12,6 +12,15 @@ namespace FileCabinetApp
     public class FileCabinetDefaultService : FileCabinetService
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetDefaultService"/> class.
+        /// Class is calling the base class constructor and send there Default Validator object.
+        /// </summary>
+        public FileCabinetDefaultService()
+            : base(new DefaultValidator())
+        {
+        }
+
+        /// <summary>
         /// Creating validator by default rules.
         /// </summary>
         /// <returns>Object of IRecordValidator interface.</returns>
