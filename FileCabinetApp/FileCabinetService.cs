@@ -11,7 +11,7 @@ namespace FileCabinetApp
     /// <summary>
     /// FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
     /// </summary>
-    public abstract class FileCabinetService
+    public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
@@ -28,7 +28,7 @@ namespace FileCabinetApp
         /// constructor injection.
         /// </summary>
         /// <param name="validator">A validator.</param>
-        protected FileCabinetService(IRecordValidator validator)
+        public FileCabinetService(IRecordValidator validator)
         {
             this.validator = validator;
         }
@@ -283,11 +283,5 @@ namespace FileCabinetApp
 
             return Array.Empty<FileCabinetRecord>();
         }
-
-        /// <summary>
-        /// Abstract method for creating the validator that will be overrided in derived classes.
-        /// </summary>
-        /// <returns>Object of IRecordValidator interface.</returns>
-        protected abstract IRecordValidator CreateValidator();
     }
 }

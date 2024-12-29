@@ -28,40 +28,6 @@
             <param name="rec">The record.</param>
             <exception cref="T:System.ArgumentException">Exception for all the rules.</exception>
         </member>
-        <member name="T:FileCabinetApp.FileCabinetCustomService">
-            <summary>
-            Class for custom validation.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetCustomService.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetCustomService"/> class.
-            Class is calling the base class constructor and send there Custom Validator object.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetCustomService.CreateValidator">
-            <summary>
-            Creating validator by custom rules.
-            </summary>
-            <returns>Object of IRecordValidator interface.</returns>
-        </member>
-        <member name="T:FileCabinetApp.FileCabinetDefaultService">
-            <summary>
-            Class for default validation.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetDefaultService.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetDefaultService"/> class.
-            Class is calling the base class constructor and send there Default Validator object.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetDefaultService.CreateValidator">
-            <summary>
-            Creating validator by default rules.
-            </summary>
-            <returns>Object of IRecordValidator interface.</returns>
-        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             Structure of the records.
@@ -168,12 +134,6 @@
             </summary>
             <param name="dateOfBirth">Date of birth.</param>
             <returns>Array of the records with specified date of birth.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
-            <summary>
-            Abstract method for creating the validator that will be overrided in derived classes.
-            </summary>
-            <returns>Object of IRecordValidator interface.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>

@@ -55,7 +55,7 @@ namespace FileCabinetApp
                     {
                         if (args[0].Split('=')[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetCustomService();
+                            fileCabinetService = new FileCabinetService(new CustomValidator());
                             typeOfTheRules = "custom";
                         }
                     }
@@ -63,14 +63,14 @@ namespace FileCabinetApp
                     {
                         if (args[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetCustomService();
+                            fileCabinetService = new FileCabinetService(new CustomValidator());
                             typeOfTheRules = "custom";
                         }
                     }
                 }
             }
 
-            fileCabinetService = new FileCabinetDefaultService();
+            fileCabinetService = new FileCabinetService(new DefaultValidator());
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {typeOfTheRules} validation rules.");
