@@ -67,42 +67,67 @@ namespace FileCabinetApp
 
                 this.list.Add(record);
 
-                foreach (var firstname in this.firstNameDictionary)
-                {
-                    if (rec.FirstName == firstname.Key)
-                    {
-                        firstname.Value.Add(record);
-                        Console.WriteLine($"Record #{this.GetStat()} is created.");
-                        return record.Id;
-                    }
-                }
-
-                foreach (var lastname in this.lastNameDictionary)
-                {
-                    if (rec.LastName == lastname.Key)
-                    {
-                        lastname.Value.Add(record);
-                        Console.WriteLine($"Record #{this.GetStat()} is created.");
-                        return record.Id;
-                    }
-                }
-
-                foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
-                {
-                    if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
-                    {
-                        dateOfBirthFromDictionary.Value.Add(record);
-                        Console.WriteLine($"Record #{this.GetStat()} is created.");
-                        return record.Id;
-                    }
-                }
+                // pragma because everithing is validating in the validator
                 #pragma warning disable CS8604
-                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
-                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
-                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
-                Console.WriteLine($"Record #{this.GetStat()} is created.");
-                #pragma warning restore CS8604
+                if (this.firstNameDictionary.Count != 0)
+                {
+                    foreach (var firstname in this.firstNameDictionary)
+                    {
+                        if (rec.FirstName == firstname.Key)
+                        {
+                            firstname.Value.Add(record);
+                        }
+                        else
+                        {
+                            this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                        }
+                    }
+                }
+                else
+                {
+                    this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                }
 
+                if (this.lastNameDictionary.Count != 0)
+                {
+                    foreach (var lastname in this.lastNameDictionary)
+                    {
+                        if (rec.LastName == lastname.Key)
+                        {
+                            lastname.Value.Add(record);
+                        }
+                        else
+                        {
+                            this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                        }
+                    }
+                }
+                else
+                {
+                    this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                }
+
+                if (this.dateOfBirthDictionary.Count != 0)
+                {
+                    foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+                    {
+                        if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
+                        {
+                            dateOfBirthFromDictionary.Value.Add(record);
+                        }
+                        else
+                        {
+                            this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
+                        }
+                    }
+                }
+                else
+                {
+                    this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
+                }
+
+                #pragma warning restore CS8604
+                Console.WriteLine($"Record #{this.GetStat()} is created.");
                 return record.Id;
             }
             catch (ArgumentException e)
@@ -116,7 +141,7 @@ namespace FileCabinetApp
         /// This method returns all the records.
         /// </summary>
         /// <returns>Array of whole the records.</returns>
-        public FileCabinetRecord[] GetRecords()
+        public IReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
             List<FileCabinetRecord> result = new List<FileCabinetRecord>();
 
@@ -125,7 +150,7 @@ namespace FileCabinetApp
                 result.Add(record);
             }
 
-            return result.ToArray();
+            return result;
         }
 
         /// <summary>
@@ -173,6 +198,7 @@ namespace FileCabinetApp
                 #pragma warning restore CA1062
 
                 this.list[id - 1] = record;
+                #pragma warning disable CS8604
 
                 foreach (var firstname in this.firstNameDictionary)
                 {
@@ -184,7 +210,10 @@ namespace FileCabinetApp
                         }
 
                         firstname.Value.Add(record);
-                        return id;
+                    }
+                    else
+                    {
+                        this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
                     }
                 }
 
@@ -198,7 +227,10 @@ namespace FileCabinetApp
                         }
 
                         lastname.Value.Add(record);
-                        return id;
+                    }
+                    else
+                    {
+                        this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
                     }
                 }
 
@@ -212,14 +244,12 @@ namespace FileCabinetApp
                         }
 
                         dateOfBirthFromDictionary.Value.Add(record);
-                        return id;
+                    }
+                    else
+                    {
+                        this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                     }
                 }
-
-                #pragma warning disable CS8604
-                this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
-                this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
-                this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                 #pragma warning restore CS8604
                 return id;
             }
@@ -235,7 +265,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>Array of the records with specified first names.</returns>
-        public FileCabinetRecord[] FindByFirstName(string firstName)
+        public IReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             foreach (var firstname in this.firstNameDictionary)
             {
@@ -253,7 +283,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastname">Last name.</param>
         /// <returns>Array of the records with specified last names.</returns>
-        public FileCabinetRecord[] FindByLastName(string lastname)
+        public IReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastname)
         {
             foreach (var lastName in this.lastNameDictionary)
             {
@@ -271,7 +301,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">Date of birth.</param>
         /// <returns>Array of the records with specified date of birth.</returns>
-        public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
+        public IReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(DateTime dateOfBirth)
         {
             foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
             {

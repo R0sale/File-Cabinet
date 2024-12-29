@@ -203,7 +203,7 @@ namespace FileCabinetApp
         {
             if (fileCabinetService != null)
             {
-                FileCabinetRecord[] records = fileCabinetService.GetRecords();
+                IReadOnlyCollection<FileCabinetRecord> records = fileCabinetService.GetRecords();
                 foreach (var record in records)
                 {
                     Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
@@ -295,7 +295,7 @@ namespace FileCabinetApp
 
                 if (args[0].Equals("firstname", StringComparison.OrdinalIgnoreCase))
                 {
-                    FileCabinetRecord[] records = fileCabinetService.FindByFirstName(args[1]);
+                    IReadOnlyCollection<FileCabinetRecord> records = fileCabinetService.FindByFirstName(args[1]);
                     if (records != null)
                     {
                         foreach (FileCabinetRecord record in records)
@@ -310,7 +310,7 @@ namespace FileCabinetApp
                 }
                 else if (args[0].Equals("lastname", StringComparison.OrdinalIgnoreCase))
                 {
-                    FileCabinetRecord[] records = fileCabinetService.FindByLastName(args[1]);
+                    IReadOnlyCollection<FileCabinetRecord> records = fileCabinetService.FindByLastName(args[1]);
                     if (records != null)
                     {
                         foreach (FileCabinetRecord record in records)
@@ -328,7 +328,7 @@ namespace FileCabinetApp
                     DateTime dateOfBirth;
                     if (DateTime.TryParseExact(args[1], "yyyy-MMM-dd", new CultureInfo("En-en"), DateTimeStyles.None, out dateOfBirth))
                     {
-                        FileCabinetRecord[] records = fileCabinetService.FindByDateOfBirth(dateOfBirth);
+                        IReadOnlyCollection<FileCabinetRecord> records = fileCabinetService.FindByDateOfBirth(dateOfBirth);
 
                         if (records != null)
                         {
