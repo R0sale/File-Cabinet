@@ -11,7 +11,7 @@ namespace FileCabinetApp
     /// <summary>
     /// FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
     /// </summary>
-    public class FileCabinetService
+    public class FileCabinetService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
@@ -49,7 +49,7 @@ namespace FileCabinetApp
 
                 this.validator.ValidateParameters(rec);
 
-                #pragma warning disable CA1062
+#pragma warning disable CA1062
 
                 // all the pragma warnings are made, because the validation is in the ValidateParameters, so there's no need to worry about nullable rec.
                 var record = new FileCabinetRecord
@@ -63,12 +63,12 @@ namespace FileCabinetApp
                     Income = rec.Income,
                 };
 
-                #pragma warning restore CA1062
+#pragma warning restore CA1062
 
                 this.list.Add(record);
 
                 // pragma because everithing is validating in the validator
-                #pragma warning disable CS8604
+#pragma warning disable CS8604
                 if (this.firstNameDictionary.Count != 0)
                 {
                     foreach (var firstname in this.firstNameDictionary)
@@ -126,7 +126,7 @@ namespace FileCabinetApp
                     this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                 }
 
-                #pragma warning restore CS8604
+#pragma warning restore CS8604
                 Console.WriteLine($"Record #{this.GetStat()} is created.");
                 return record.Id;
             }
@@ -158,9 +158,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>The number of records.</returns>
         // pragma because it is the initial code.
-        #pragma warning disable CA1024
+#pragma warning disable CA1024
         public int GetStat() => this.list.Count;
-        #pragma warning restore CA1024
+#pragma warning restore CA1024
         /// <summary>
         /// This method edits the record.
         /// </summary>
@@ -183,7 +183,7 @@ namespace FileCabinetApp
 
                 this.validator.ValidateParameters(rec);
 
-                #pragma warning disable CA1062
+#pragma warning disable CA1062
 
                 var record = new FileCabinetRecord
                 {
@@ -195,10 +195,10 @@ namespace FileCabinetApp
                     FavouriteNumeral = rec.FavouriteNumeral,
                     Income = rec.Income,
                 };
-                #pragma warning restore CA1062
+#pragma warning restore CA1062
 
                 this.list[id - 1] = record;
-                #pragma warning disable CS8604
+#pragma warning disable CS8604
 
                 foreach (var firstname in this.firstNameDictionary)
                 {
@@ -250,7 +250,7 @@ namespace FileCabinetApp
                         this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                     }
                 }
-                #pragma warning restore CS8604
+#pragma warning restore CS8604
                 return id;
             }
             catch (ArgumentException e)
