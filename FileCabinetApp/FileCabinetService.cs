@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
@@ -28,7 +29,7 @@ namespace FileCabinetApp
         {
             try
             {
-                this.ValidateParameters(rec);
+                this.CreateValidator().ValidateParameters(rec);
 
                 #pragma warning disable CA1062
 
@@ -132,7 +133,7 @@ namespace FileCabinetApp
                     throw new ArgumentException($"#{id} record not found");
                 }
 
-                this.ValidateParameters(rec);
+                this.CreateValidator().ValidateParameters(rec);
 
                 #pragma warning disable CA1062
 
@@ -154,7 +155,11 @@ namespace FileCabinetApp
                 {
                     if (rec.FirstName == firstname.Key)
                     {
-                        firstname.Value.Clear();
+                        if (firstname.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                        {
+                            firstname.Value.Remove(firstname.Value.Where(x => x.Id == id).ToArray()[0]);
+                        }
+
                         firstname.Value.Add(record);
                         return id;
                     }
@@ -164,7 +169,11 @@ namespace FileCabinetApp
                 {
                     if (rec.LastName == lastname.Key)
                     {
-                        lastname.Value.Clear();
+                        if (lastname.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                        {
+                            lastname.Value.Remove(lastname.Value.Where(x => x.Id == id).ToArray()[0]);
+                        }
+
                         lastname.Value.Add(record);
                         return id;
                     }
@@ -174,7 +183,11 @@ namespace FileCabinetApp
                 {
                     if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
                     {
-                        dateOfBirthFromDictionary.Value.Clear();
+                        if (dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                        {
+                            dateOfBirthFromDictionary.Value.Remove(dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray()[0]);
+                        }
+
                         dateOfBirthFromDictionary.Value.Add(record);
                         return id;
                     }
@@ -201,7 +214,6 @@ namespace FileCabinetApp
         /// <returns>Array of the records with specified first names.</returns>
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
-            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
             foreach (var firstname in this.firstNameDictionary)
             {
                 if (firstname.Key.Equals(firstName, StringComparison.OrdinalIgnoreCase))
@@ -220,7 +232,6 @@ namespace FileCabinetApp
         /// <returns>Array of the records with specified last names.</returns>
         public FileCabinetRecord[] FindByLastName(string lastname)
         {
-            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
             foreach (var lastName in this.lastNameDictionary)
             {
                 if (lastName.Key.Equals(lastname, StringComparison.OrdinalIgnoreCase))
@@ -239,8 +250,6 @@ namespace FileCabinetApp
         /// <returns>Array of the records with specified date of birth.</returns>
         public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
         {
-            List<FileCabinetRecord> records = new List<FileCabinetRecord>();
-
             foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
             {
                 if (dateOfBirthFromDictionary.Key == dateOfBirth)
@@ -253,9 +262,9 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Abstract method that will be overrided in derived classes.
+        /// Abstract method for creating the validator that will be overrided in derived classes.
         /// </summary>
-        /// <param name="rec">Record.</param>
-        protected abstract void ValidateParameters(ParameterObject rec);
+        /// <returns>Object of IRecordValidator interface.</returns>
+        protected abstract IRecordValidator CreateValidator();
     }
 }

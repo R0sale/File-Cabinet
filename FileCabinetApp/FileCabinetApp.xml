@@ -4,29 +4,51 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CustomValidator">
+            <summary>
+            Strategy class for validating data by custom rules.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Method for validating parameters.
+            </summary>
+            <param name="rec">The record.</param>
+            <exception cref="T:System.ArgumentException">Exception for the custim rules.</exception>
+        </member>
+        <member name="T:FileCabinetApp.DefaultValidator">
+            <summary>
+            Stratagy class for validating data by default rules.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Method for validating parameters of the record.
+            </summary>
+            <param name="rec">The record.</param>
+            <exception cref="T:System.ArgumentException">Exception for all the rules.</exception>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetCustomService">
             <summary>
             Class for custom validation.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetCustomService.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CreateValidator">
             <summary>
-            Overriding the abstract method from parent class.
+            Creating validator by custom rules.
             </summary>
-            <param name="rec">Record.</param>
-            <exception cref="T:System.ArgumentException">Exception for validation.</exception>
+            <returns>Object of IRecordValidator interface.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetDefaultService">
             <summary>
             Class for default validation.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetDefaultService.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CreateValidator">
             <summary>
-            Overriding the abstract method from parent class.
+            Creating validator by default rules.
             </summary>
-            <param name="rec">Record.</param>
-            <exception cref="T:System.ArgumentException">Exception for validation.</exception>
+            <returns>Object of IRecordValidator interface.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
@@ -128,11 +150,22 @@
             <param name="dateOfBirth">Date of birth.</param>
             <returns>Array of the records with specified date of birth.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
             <summary>
-            Abstract method that will be overrided in derived classes.
+            Abstract method for creating the validator that will be overrided in derived classes.
             </summary>
-            <param name="rec">Record.</param>
+            <returns>Object of IRecordValidator interface.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IRecordValidator">
+            <summary>
+            Interface for class strategies.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Method for validating parameters.
+            </summary>
+            <param name="rec">Object with the record.</param>
         </member>
         <member name="T:FileCabinetApp.ParameterObject">
             <summary>
