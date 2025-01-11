@@ -53,5 +53,7 @@
         /// <returns>The number of records.</returns>
         // pragma because it is the initial code.
         int GetStat();
+
+        FileCabinetServiceSnapshot MakeSnapshot();
     }
 }
