@@ -13,7 +13,9 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+#pragma warning disable CA1859
         private static IFileCabinetService? fileCabinetService;
+#pragma warning restore CA1859
         private static string typeOfTheRules = "default";
 
         private static Func<string, Tuple<bool, string, string>> stringConverter = (string str) =>
@@ -186,6 +188,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -197,6 +200,7 @@ namespace FileCabinetApp
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
+            new string[] { "export csv", "exports the data of the service into the csv file", "The 'export csv' command exports the data of the service into the csv file" },
         };
 
         /// <summary>
@@ -540,6 +544,88 @@ namespace FileCabinetApp
                 return value;
             }
             while (true);
+        }
+
+        private static void Export(string parameters)
+        {
+            try
+            {
+                string[] args = parameters.Split(' ');
+
+                if (args.Length != 2)
+                {
+                    throw new ArgumentException("The arguments are not correct");
+                }
+
+                string[] arguments = args[1].Split('.');
+
+                if (arguments[1].Equals("csv", StringComparison.Ordinal))
+                {
+                    if (File.Exists(args[1]))
+                    {
+                        string? input;
+                        do
+                        {
+                            Console.WriteLine($"File {args[1]} is already exist, do you want to rewrite it? [Y/N]");
+                            input = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(input) && input.Equals("N", StringComparison.Ordinal))
+                            {
+                                return;
+                            }
+                        }
+                        while (string.IsNullOrEmpty(input) || (!input.Equals("N", StringComparison.Ordinal) && !input.Equals("Y", StringComparison.Ordinal)));
+                    }
+
+                    using (StreamWriter writer = new StreamWriter(args[1]))
+                    {
+                        if (fileCabinetService is null)
+                        {
+                            throw new ArgumentException("the fileCabinetService is null");
+                        }
+
+                        FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+
+                        snapshot.SaveToCsv(writer);
+                    }
+
+                    Console.WriteLine($"All records are exported to file {args[1]}.");
+                }
+                else if (arguments[1].Equals("xml", StringComparison.Ordinal))
+                {
+                    if (File.Exists(args[1]))
+                    {
+                        string? input;
+                        do
+                        {
+                            Console.WriteLine($"File {args[1]} is already exist, do you want to rewrite it? [Y/N]");
+                            input = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(input) && input.Equals("N", StringComparison.Ordinal))
+                            {
+                                return;
+                            }
+                        }
+                        while (string.IsNullOrEmpty(input) || (!input.Equals("N", StringComparison.Ordinal) && !input.Equals("Y", StringComparison.Ordinal)));
+                    }
+
+                    using (StreamWriter writer = new StreamWriter(args[1]))
+                    {
+                        if (fileCabinetService is null)
+                        {
+                            throw new ArgumentException("the fileCabinetService is null");
+                        }
+
+                        FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+
+                        snapshot.SaveToXml(writer);
+                    }
+
+                    Console.WriteLine($"All records are exported to file {args[1]}.");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

@@ -76,8 +76,9 @@ namespace FileCabinetApp
                         if (rec.FirstName == firstname.Key)
                         {
                             firstname.Value.Add(record);
+                            break;
                         }
-                        else
+                        else if (firstname.Equals(this.firstNameDictionary.Last().Key))
                         {
                             this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
                         }
@@ -95,8 +96,9 @@ namespace FileCabinetApp
                         if (rec.LastName == lastname.Key)
                         {
                             lastname.Value.Add(record);
+                            break;
                         }
-                        else
+                        else if (lastname.Equals(this.lastNameDictionary.Last().Key))
                         {
                             this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
                         }
@@ -114,8 +116,9 @@ namespace FileCabinetApp
                         if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
                         {
                             dateOfBirthFromDictionary.Value.Add(record);
+                            break;
                         }
-                        else
+                        else if (dateOfBirthFromDictionary.Equals(this.dateOfBirthDictionary.Last().Key))
                         {
                             this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
                         }
@@ -312,6 +315,15 @@ namespace FileCabinetApp
             }
 
             return Array.Empty<FileCabinetRecord>();
+        }
+
+        /// <summary>
+        /// Makes a snapshot of data.
+        /// </summary>
+        /// <returns>The snapshot.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            return new FileCabinetServiceSnapshot(this.list.ToArray());
         }
     }
 }
