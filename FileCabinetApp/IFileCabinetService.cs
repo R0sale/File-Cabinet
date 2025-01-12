@@ -54,6 +54,10 @@
         // pragma because it is the initial code.
         int GetStat();
 
+        /// <summary>
+        /// This is for making the snapshot.
+        /// </summary>
+        /// <returns>This returns the snapshot.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
     }
 }
