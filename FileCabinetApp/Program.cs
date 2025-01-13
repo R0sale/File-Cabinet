@@ -200,7 +200,7 @@ namespace FileCabinetApp
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
-            new string[] { "export csv", "exports the data of the service into the csv file", "The 'export csv' command exports the data of the service into the csv file" },
+            new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv' command exports the data of the service into the csv/xml file" },
         };
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace FileCabinetApp
                     {
                         if (args[0].Split('=')[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
+                            fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
                             typeOfTheRules = "custom";
                         }
                     }
@@ -225,14 +225,14 @@ namespace FileCabinetApp
                     {
                         if (args[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
+                            fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
                             typeOfTheRules = "custom";
                         }
                     }
                 }
             }
 
-            fileCabinetService = new FileCabinetService(new DefaultValidator());
+            fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {typeOfTheRules} validation rules.");
