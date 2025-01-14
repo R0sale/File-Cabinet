@@ -50,7 +50,7 @@ namespace FileCabinetApp
 
                     this.fileStream.Write(BitConverter.GetBytes((short)0), 0, 2);
 
-                    this.fileStream.Write(BitConverter.GetBytes((this.fileStream.Length / 277) + 1), 0, 4);
+                    this.fileStream.Write(BitConverter.GetBytes(id), 0, 4);
                     ComplementaryFunctions.WriteFixedString(this.fileStream, rec.FirstName, 120);
                     ComplementaryFunctions.WriteFixedString(this.fileStream, rec.LastName, 120);
                     this.fileStream.Write(BitConverter.GetBytes(rec.DateOfBirth.Year), 0, 4);
@@ -133,17 +133,50 @@ namespace FileCabinetApp
 
         public IReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            throw new NotImplementedException();
+            List<FileCabinetRecord> records = this.GetRecords().ToList();
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+
+            foreach (FileCabinetRecord record in records)
+            {
+                if (record.FirstName.Equals(firstName, StringComparison.Ordinal))
+                {
+                    result.Add(record);
+                }
+            }
+
+            return result;
         }
 
         public IReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            List<FileCabinetRecord> records = this.GetRecords().ToList();
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+
+            foreach (FileCabinetRecord record in records)
+            {
+                if (record.LastName.Equals(lastName, StringComparison.Ordinal))
+                {
+                    result.Add(record);
+                }
+            }
+
+            return result;
         }
 
         public IReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(DateTime dateOfBirth)
         {
-            throw new NotImplementedException();
+            List<FileCabinetRecord> records = this.GetRecords().ToList();
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+
+            foreach (FileCabinetRecord record in records)
+            {
+                if (record.DateOfBirth.Equals(dateOfBirth))
+                {
+                    result.Add(record);
+                }
+            }
+
+            return result;
         }
 
         public FileCabinetServiceSnapshot MakeSnapshot()
