@@ -11,7 +11,7 @@ namespace FileCabinetApp
     /// <summary>
     /// FileCabinetService class is maintaining the whole records and set methods to use the required behaviour.
     /// </summary>
-    public class FileCabinetService : IFileCabinetService
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
 
@@ -24,11 +24,11 @@ namespace FileCabinetApp
         private IRecordValidator? validator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// constructor injection.
         /// </summary>
         /// <param name="validator">A validator.</param>
-        public FileCabinetService(IRecordValidator validator)
+        public FileCabinetMemoryService(IRecordValidator validator)
         {
             this.validator = validator;
         }

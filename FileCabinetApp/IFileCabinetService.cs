@@ -55,9 +55,9 @@
         int GetStat();
 
         /// <summary>
-        /// This is for making the snapshot.
+        /// Makes the snapshot.
         /// </summary>
-        /// <returns>This returns the snapshot.</returns>
+        /// <returns>The snapshot.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
     }
 }

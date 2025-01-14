@@ -200,7 +200,7 @@ namespace FileCabinetApp
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
-            new string[] { "export csv", "exports the data of the service into the csv file", "The 'export csv' command exports the data of the service into the csv file" },
+            new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv' command exports the data of the service into the csv/xml file" },
         };
 
         /// <summary>
@@ -213,26 +213,66 @@ namespace FileCabinetApp
             {
                 if (args.Length > 0)
                 {
-                    if (args[0].StartsWith("--validation-rules=", StringComparison.OrdinalIgnoreCase))
+                    if (args.Contains("-v"))
                     {
-                        if (args[0].Split('=')[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
+                        int index = Array.IndexOf(args, "-v");
+
+                        if (args[index + 1].Equals("custom", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
                             typeOfTheRules = "custom";
                         }
                     }
-                    else if (args[0].Equals("-v", StringComparison.OrdinalIgnoreCase))
+                    else if (args.Contains("--validation-rules=custom"))
                     {
-                        if (args[1].Equals("custom", StringComparison.OrdinalIgnoreCase))
+                        typeOfTheRules = "custom";
+                    }
+
+                    if (args.Contains("--storage"))
+                    {
+                        int index = Array.IndexOf(args, "--storage");
+
+                        if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetService(new CustomValidator());
-                            typeOfTheRules = "custom";
+                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
                         }
+                        else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (typeOfTheRules.Equals("custom", StringComparison.OrdinalIgnoreCase))
+                            {
+                                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
+                            }
+                            else
+                            {
+                                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                            }
+                        }
+                    }
+                    else if (args.Contains("-s"))
+                    {
+                        int index = Array.IndexOf(args, "-s");
+
+                        if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
+                        }
+                        else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (typeOfTheRules.Equals("custom", StringComparison.OrdinalIgnoreCase))
+                            {
+                                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
+                            }
+                            else
+                            {
+                                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                     }
                 }
             }
-
-            fileCabinetService = new FileCabinetService(new DefaultValidator());
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {typeOfTheRules} validation rules.");
