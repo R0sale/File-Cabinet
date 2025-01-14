@@ -33,5 +33,11 @@ namespace FileCabinetApp
                 fileStream.Write(array, 0, length);
             }
         }
+
+        public static string ReadFixedString(BinaryReader reader, int length)
+        {
+            char[] chars = reader.ReadChars(length);
+            return new string(chars).TrimEnd('\0');
+        }
     }
 }

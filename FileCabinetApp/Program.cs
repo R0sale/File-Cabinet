@@ -233,7 +233,7 @@ namespace FileCabinetApp
 
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Create, FileAccess.ReadWrite));
+                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
@@ -253,7 +253,7 @@ namespace FileCabinetApp
 
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Create, FileAccess.ReadWrite));
+                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
