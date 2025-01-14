@@ -17,6 +17,7 @@ namespace FileCabinetApp
         private static IFileCabinetService? fileCabinetService;
 #pragma warning restore CA1859
         private static string typeOfTheRules = "default";
+        private static string type = "memory";
 
         private static Func<string, Tuple<bool, string, string>> stringConverter = (string str) =>
         {
@@ -234,6 +235,7 @@ namespace FileCabinetApp
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
                             fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Create, FileAccess.ReadWrite));
+                            type = "file";
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
@@ -254,6 +256,7 @@ namespace FileCabinetApp
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
                             fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Create, FileAccess.ReadWrite));
+                            type = "file";
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
@@ -279,6 +282,7 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine($"Using {typeOfTheRules} validation rules.");
             Console.WriteLine(Program.HintMessage);
+            Console.WriteLine(type);
             Console.WriteLine();
 
             do
