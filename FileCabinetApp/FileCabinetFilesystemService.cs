@@ -103,7 +103,7 @@ namespace FileCabinetApp
 
         public int GetStat()
         {
-            throw new NotImplementedException();
+            return (int)(this.fileStream.Length / 277);
         }
 
         public IReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
