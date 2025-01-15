@@ -1,14 +1,19 @@
 ﻿
+using System.Text;
+
 namespace FileCabinetApp
 {
     class Program
     {
+        public static Random rnd = new Random();
+
         public static void Main(string[] args)
         {
             string outputType = string.Empty;
             string path = string.Empty;
             int numberOfRecords = 0;
             int startId = 0;
+            
 
             if (args.Length > 0)
             {
@@ -93,6 +98,51 @@ namespace FileCabinetApp
             }
 
             Console.WriteLine($"{numberOfRecords} records were written to {path}");
+
+
+            for (int i = 0; i < numberOfRecords; i++)
+            {
+                Console.WriteLine($"{CreateRandomString()} {CreateRandomString()} {CreateRandomDateOfBirth()} {CreateRandomFavouriteNumeral()} {CreateRandomAge()} {CreateRandomIncome()}");
+            }
+        }
+
+        private static string CreateRandomString()
+        {
+            string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            
+            StringBuilder stringBuilder = new StringBuilder();
+            int position = 0;
+            int length = rnd.Next(3, 59);
+            for (int i = 0; i < length; i++)
+            {
+                position = rnd.Next(0, Alphabet.Length - 1);
+                stringBuilder.Append(Alphabet[position]);
+            }
+
+            return stringBuilder.ToString();    
+        }
+
+        private static short CreateRandomAge()
+        {
+            return (short)rnd.Next(1, 99);
+        }
+
+        private static DateTime CreateRandomDateOfBirth()
+        {
+            int year = rnd.Next(1950, DateTime.Now.Year - 1);
+            int month = rnd.Next(1, 12);
+            int day = rnd.Next(1, 31);
+            return new DateTime(year, month, day);
+        }
+
+        private static char CreateRandomFavouriteNumeral()
+        {
+            return (char)rnd.Next(49, 57);
+        }
+
+        private static decimal CreateRandomIncome()
+        {
+            return (decimal)rnd.Next(350, 2000000);
         }
     }
 }
