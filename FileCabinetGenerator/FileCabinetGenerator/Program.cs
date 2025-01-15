@@ -97,12 +97,16 @@ namespace FileCabinetApp
                 }
             }
 
-            Console.WriteLine($"{numberOfRecords} records were written to {path}");
-
-
-            for (int i = 0; i < numberOfRecords; i++)
+            if (outputType.Equals("csv", StringComparison.Ordinal))
             {
-                Console.WriteLine($"{CreateRandomString()} {CreateRandomString()} {CreateRandomDateOfBirth()} {CreateRandomFavouriteNumeral()} {CreateRandomAge()} {CreateRandomIncome()}");
+                using (StreamWriter writer = new StreamWriter(path))
+                {
+                    for (int i = 0; i < numberOfRecords; i++)
+                    {
+                        string record = $"{CreateRandomString()},{CreateRandomString()},{CreateRandomDateOfBirth()},{CreateRandomAge()},{CreateRandomFavouriteNumeral()},{CreateRandomIncome()}";
+                        writer.WriteLine(record);
+                    }
+                }
             }
         }
 
