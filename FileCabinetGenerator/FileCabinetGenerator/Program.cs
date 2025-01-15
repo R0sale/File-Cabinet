@@ -1,7 +1,8 @@
-﻿
-using System.Text;
+﻿using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
-namespace FileCabinetApp
+namespace FileCabinetGenerator
 {
     class Program
     {
@@ -103,8 +104,36 @@ namespace FileCabinetApp
                 {
                     for (int i = 0; i < numberOfRecords; i++)
                     {
-                        string record = $"{CreateRandomString()},{CreateRandomString()},{CreateRandomDateOfBirth()},{CreateRandomAge()},{CreateRandomFavouriteNumeral()},{CreateRandomIncome()}";
+                        string record = $"{startId++},{CreateRandomString()},{CreateRandomString()},{CreateRandomDateOfBirth()},{CreateRandomAge()},{CreateRandomFavouriteNumeral()},{CreateRandomIncome()}";
                         writer.WriteLine(record);
+                    }
+                }
+            }
+            else
+            {
+                Records records = new Records();
+                records.RecordList = new List<FileCabinetGeneratorRecord>();
+                for (int i = 0; i < numberOfRecords; i++)
+                {
+                    FileCabinetGeneratorRecord record = new FileCabinetGeneratorRecord()
+                    {
+                        Id = startId++,
+                        RecordName = new Name { FirstName = CreateRandomString(), LastName = CreateRandomString() },
+                        DateOfBirth = CreateRandomDateOfBirth(),
+                        Age = CreateRandomAge(),
+                        FavouriteNumeral = CreateRandomFavouriteNumeral(),
+                        Income = CreateRandomIncome(),
+                    };
+                    records.RecordList.Add(record);
+                }
+
+                XmlSerializer serializer = new XmlSerializer(typeof(Records));
+
+                using (StreamWriter writ = new StreamWriter(path))
+                {
+                    using (XmlWriter writer = new XmlTextWriter(writ))
+                    {
+                        serializer.Serialize(writer, records);
                     }
                 }
             }
