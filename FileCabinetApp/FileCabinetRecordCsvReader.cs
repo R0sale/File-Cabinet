@@ -7,15 +7,26 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// A reader class.
+    /// </summary>
     public class FileCabinetRecordCsvReader
     {
         private StreamReader reader;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetRecordCsvReader"/> class.
+        /// </summary>
+        /// <param name="reader">A csv reder.</param>
         public FileCabinetRecordCsvReader(StreamReader reader)
         {
             this.reader = reader;
         }
 
+        /// <summary>
+        /// Reads all the csv file.
+        /// </summary>
+        /// <returns>A collection of records.</returns>
         public IList<FileCabinetRecord> ReadAll()
         {
             List<FileCabinetRecord> records = new List<FileCabinetRecord>();

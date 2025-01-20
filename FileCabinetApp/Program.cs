@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Windows.Markup;
+using System.Xml.Serialization;
 
 namespace FileCabinetApp
 {
@@ -193,7 +194,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
         };
-        
+
         private static string[][] helpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
@@ -696,7 +697,7 @@ namespace FileCabinetApp
 
                     if (!File.Exists(args[1]))
                     {
-                        throw new ArgumentException("The fie does not exist");
+                        throw new ArgumentException("The file does not exist");
                     }
 
                     using (StreamReader reader = new StreamReader(args[1]))
@@ -718,6 +719,25 @@ namespace FileCabinetApp
                     if (!args[1].Substring(args[1].Length - 3).Equals("xml", StringComparison.Ordinal))
                     {
                         throw new ArgumentException("The file format is not correct");
+                    }
+
+                    if (!File.Exists(args[1]))
+                    {
+                        throw new ArgumentException("The file does not exists");
+                    }
+
+                    using (FileStream stream = new FileStream(args[1], FileMode.Open))
+                    {
+                        FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot(Array.Empty<FileCabinetRecord>());
+
+                        snapshot.LoadFromXml(stream);
+
+                        if (fileCabinetService is null)
+                        {
+                            throw new ArgumentException("The service is null");
+                        }
+
+                        fileCabinetService.Restore(snapshot);
                     }
 
                     Console.WriteLine($"Import {args[1]}");
