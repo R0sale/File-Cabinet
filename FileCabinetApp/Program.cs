@@ -203,8 +203,8 @@ namespace FileCabinetApp
             new string[] { "list", "shows all the records", "The 'list' command shows all the records" },
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
-            new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv' command exports the data of the service into the csv/xml file" },
-            new string[] { "import csv", "imports the data of the csv file into file depot", "The 'import csv' command imports the data of the csv file into file depot" },
+            new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv/xml' command exports the data of the service into the csv/xml file" },
+            new string[] { "import csv/xml", "imports the data of the csv/xml file into file depot", "The 'import csv/xml' command imports the data of the csv file into file depot" },
         };
 
         /// <summary>
@@ -680,8 +680,6 @@ namespace FileCabinetApp
         {
             try
             {
-                Console.WriteLine($"Import {parameters}");
-
                 string[] args = parameters.Split(' ');
 
                 if (args.Length != 2)
@@ -689,11 +687,16 @@ namespace FileCabinetApp
                     throw new ArgumentException("The arguments are not correct");
                 }
 
-                if (args[0].Equals("csv", StringComparison.OrdinalIgnoreCase))
+                if (args[0].Equals("csv", StringComparison.Ordinal))
                 {
                     if (!args[1].Substring(args[1].Length - 3).Equals("csv", StringComparison.Ordinal))
                     {
                         throw new ArgumentException("The file format is not correct");
+                    }
+
+                    if (!File.Exists(args[1]))
+                    {
+                        throw new ArgumentException("The fie does not exist");
                     }
 
                     using (StreamReader reader = new StreamReader(args[1]))
@@ -707,6 +710,17 @@ namespace FileCabinetApp
 
                         fileCabinetService.Restore(snapshot);
                     }
+
+                    Console.WriteLine($"Import {args[1]}");
+                }
+                else if (args[0].Equals("xml", StringComparison.Ordinal))
+                {
+                    if (!args[1].Substring(args[1].Length - 3).Equals("xml", StringComparison.Ordinal))
+                    {
+                        throw new ArgumentException("The file format is not correct");
+                    }
+
+                    Console.WriteLine($"Import {args[1]}");
                 }
             }
             catch (ArgumentException e)

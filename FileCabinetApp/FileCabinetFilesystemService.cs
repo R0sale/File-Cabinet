@@ -240,7 +240,6 @@ namespace FileCabinetApp
             {
                 Console.WriteLine(e.Message);
             }
-
         }
     }
 }
