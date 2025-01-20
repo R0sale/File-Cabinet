@@ -183,5 +183,10 @@ namespace FileCabinetApp
         {
             throw new NotImplementedException();
         }
+
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

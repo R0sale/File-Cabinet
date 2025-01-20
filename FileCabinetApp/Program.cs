@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Windows.Markup;
 
 namespace FileCabinetApp
 {
@@ -189,8 +191,9 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
+            new Tuple<string, Action<string>>("import", Import),
         };
-
+        
         private static string[][] helpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
@@ -201,6 +204,7 @@ namespace FileCabinetApp
             new string[] { "edit", "edits the specified record", "The 'edit' command edits the specified record" },
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
             new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv' command exports the data of the service into the csv/xml file" },
+            new string[] { "import csv", "imports the data of the csv file into file depot", "The 'import csv' command imports the data of the csv file into file depot" },
         };
 
         /// <summary>
@@ -271,6 +275,10 @@ namespace FileCabinetApp
                     {
                         fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                     }
+                }
+                else
+                {
+                    fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                 }
             }
 
@@ -660,6 +668,45 @@ namespace FileCabinetApp
                     }
 
                     Console.WriteLine($"All records are exported to file {args[1]}.");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Import(string parameters)
+        {
+            try
+            {
+                Console.WriteLine($"Import {parameters}");
+
+                string[] args = parameters.Split(' ');
+
+                if (args.Length != 2)
+                {
+                    throw new ArgumentException("The arguments are not correct");
+                }
+
+                if (args[0].Equals("csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!args[1].Substring(args[1].Length - 3).Equals("csv", StringComparison.Ordinal))
+                    {
+                        throw new ArgumentException("The file format is not correct");
+                    }
+
+                    using (StreamReader reader = new StreamReader(args[1]))
+                    {
+                        FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot(Array.Empty<FileCabinetRecord>());
+                        snapshot.LoadFromCsv(reader);
+                        if (fileCabinetService == null)
+                        {
+                            throw new ArgumentException("Service is null");
+                        }
+
+                        fileCabinetService.Restore(snapshot);
+                    }
                 }
             }
             catch (ArgumentException e)

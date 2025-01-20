@@ -24,6 +24,8 @@ namespace FileCabinetApp
             this.records = records;
         }
 
+        public IReadOnlyCollection<FileCabinetRecord>? Records => Array.AsReadOnly(this.records);
+
         /// <summary>
         /// Saves the data to the csv file.
         /// </summary>
@@ -65,6 +67,15 @@ namespace FileCabinetApp
 
                 xmlwriter.WriteEndElement();
                 xmlwriter.WriteEndDocument();
+            }
+        }
+
+        public void LoadFromCsv(StreamReader reader)
+        {
+            if (reader != null)
+            {
+                FileCabinetRecordCsvReader csvReader = new FileCabinetRecordCsvReader(reader);
+                this.records = csvReader.ReadAll().ToArray();
             }
         }
     }

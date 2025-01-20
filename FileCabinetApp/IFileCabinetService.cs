@@ -59,5 +59,7 @@
         /// </summary>
         /// <returns>The snapshot.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
+
+        void Restore(FileCabinetServiceSnapshot snapshot);
     }
 }
