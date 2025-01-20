@@ -186,7 +186,61 @@ namespace FileCabinetApp
 
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            throw new NotImplementedException();
+            try
+            {
+                const int recordSize = 277;
+
+                if (snapshot is null)
+                {
+                    throw new ArgumentException("The snapshot is null");
+                }
+
+                if (snapshot.Records is null)
+                {
+                    throw new ArgumentException("The records are null");
+                }
+
+                List<FileCabinetRecord> newRecords = snapshot.Records.ToList();
+
+                List<FileCabinetRecord> initialRecords = this.GetRecords().ToList();
+
+                foreach (var record in newRecords)
+                {
+                    var existingRecord = initialRecords.FirstOrDefault(elem => elem.Id == record.Id);
+
+                    if (existingRecord != null)
+                    {
+                        int index = initialRecords.IndexOf(record);
+                        initialRecords[index] = record;
+                    }
+                    else
+                    {
+                        initialRecords.Add(record);
+                    }
+                }
+
+                for (int i = 0; i < initialRecords.Count; i++)
+                {
+                    this.fileStream.Seek(i * recordSize, SeekOrigin.Begin);
+
+                    this.fileStream.Write(BitConverter.GetBytes((short)0), 0, 2);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].Id), 0, 4);
+                    ComplementaryFunctions.WriteFixedString(this.fileStream, initialRecords[i].FirstName, 120);
+                    ComplementaryFunctions.WriteFixedString(this.fileStream, initialRecords[i].LastName, 120);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].DateOfBirth.Year), 0, 4);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].DateOfBirth.Month), 0, 4);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].DateOfBirth.Day), 0, 4);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].Age), 0, 2);
+                    this.fileStream.Write(BitConverter.GetBytes(initialRecords[i].FavouriteNumeral), 0, 1);
+                    ComplementaryFunctions.WriteFixedDecimal(this.fileStream, initialRecords[i].Income, 16);
+                    this.fileStream.Flush();
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
         }
     }
 }
