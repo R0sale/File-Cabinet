@@ -59,5 +59,11 @@
         /// </summary>
         /// <returns>The snapshot.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>
+        /// Gets the collection of the records from the snapshot.
+        /// </summary>
+        /// <param name="snapshot">Snapshot.</param>
+        void Restore(FileCabinetServiceSnapshot snapshot);
     }
 }

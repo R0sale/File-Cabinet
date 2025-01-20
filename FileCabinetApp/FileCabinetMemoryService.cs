@@ -78,9 +78,10 @@ namespace FileCabinetApp
                             firstname.Value.Add(record);
                             break;
                         }
-                        else if (firstname.Equals(this.firstNameDictionary.Last().Key))
+                        else if (firstname.Key.Equals(this.firstNameDictionary.Last().Key, StringComparison.Ordinal))
                         {
                             this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                            break;
                         }
                     }
                 }
@@ -98,9 +99,10 @@ namespace FileCabinetApp
                             lastname.Value.Add(record);
                             break;
                         }
-                        else if (lastname.Equals(this.lastNameDictionary.Last().Key))
+                        else if (lastname.Key.Equals(this.lastNameDictionary.Last().Key, StringComparison.Ordinal))
                         {
                             this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                            break;
                         }
                     }
                 }
@@ -118,9 +120,10 @@ namespace FileCabinetApp
                             dateOfBirthFromDictionary.Value.Add(record);
                             break;
                         }
-                        else if (dateOfBirthFromDictionary.Equals(this.dateOfBirthDictionary.Last().Key))
+                        else if (dateOfBirthFromDictionary.Key.Equals(this.dateOfBirthDictionary.Last().Key))
                         {
                             this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
+                            break;
                         }
                     }
                 }
@@ -205,18 +208,39 @@ namespace FileCabinetApp
 
                 foreach (var firstname in this.firstNameDictionary)
                 {
+                    if (firstname.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                    {
+                        firstname.Value.Remove(firstname.Value.Where(x => x.Id == id).ToArray()[0]);
+                    }
+                }
+
+                foreach (var lastname in this.lastNameDictionary)
+                {
+                    if (lastname.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                    {
+                        lastname.Value.Remove(lastname.Value.Where(x => x.Id == id).ToArray()[0]);
+                    }
+                }
+
+                foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+                {
+                    if (dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray().Length != 0)
+                    {
+                        dateOfBirthFromDictionary.Value.Remove(dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray()[0]);
+                    }
+                }
+
+                foreach (var firstname in this.firstNameDictionary)
+                {
                     if (rec.FirstName == firstname.Key)
                     {
-                        if (firstname.Value.Where(x => x.Id == id).ToArray().Length != 0)
-                        {
-                            firstname.Value.Remove(firstname.Value.Where(x => x.Id == id).ToArray()[0]);
-                        }
-
                         firstname.Value.Add(record);
+                        break;
                     }
-                    else
+                    else if (this.firstNameDictionary.Last().Equals(firstname))
                     {
-                        this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                        this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                        break;
                     }
                 }
 
@@ -224,16 +248,13 @@ namespace FileCabinetApp
                 {
                     if (rec.LastName == lastname.Key)
                     {
-                        if (lastname.Value.Where(x => x.Id == id).ToArray().Length != 0)
-                        {
-                            lastname.Value.Remove(lastname.Value.Where(x => x.Id == id).ToArray()[0]);
-                        }
-
                         lastname.Value.Add(record);
+                        break;
                     }
-                    else
+                    else if (this.lastNameDictionary.Last().Equals(lastname))
                     {
-                        this.firstNameDictionary.Add(rec.FirstName, new List<FileCabinetRecord>() { record });
+                        this.lastNameDictionary.Add(rec.LastName, new List<FileCabinetRecord>() { record });
+                        break;
                     }
                 }
 
@@ -241,16 +262,13 @@ namespace FileCabinetApp
                 {
                     if (rec.DateOfBirth == dateOfBirthFromDictionary.Key)
                     {
-                        if (dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray().Length != 0)
-                        {
-                            dateOfBirthFromDictionary.Value.Remove(dateOfBirthFromDictionary.Value.Where(x => x.Id == id).ToArray()[0]);
-                        }
-
                         dateOfBirthFromDictionary.Value.Add(record);
+                        break;
                     }
-                    else
+                    else if (this.dateOfBirthDictionary.Last().Equals(dateOfBirthFromDictionary))
                     {
                         this.dateOfBirthDictionary.Add(rec.DateOfBirth, new List<FileCabinetRecord>() { record });
+                        break;
                     }
                 }
 #pragma warning restore CS8604
@@ -324,6 +342,129 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             return new FileCabinetServiceSnapshot(this.list.ToArray());
+        }
+
+        /// <summary>
+        /// The method for loading the records from the snapshot for the list and dictionaries.
+        /// </summary>
+        /// <param name="snapshot">A snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            try
+            {
+                if (snapshot is null)
+                {
+                    throw new ArgumentException("The snapshot is null");
+                }
+
+                if (snapshot.Records is null)
+                {
+                    throw new ArgumentException("The records are null");
+                }
+
+                foreach (var record in snapshot.Records)
+                {
+                    var existingRecord = this.list.FirstOrDefault(elem => elem.Id == record.Id);
+
+                    if (existingRecord != null)
+                    {
+                        int index = this.list.IndexOf(existingRecord);
+                        this.list[index] = record;
+                    }
+                    else
+                    {
+                        this.list.Add(record);
+                    }
+
+                    if (this.firstNameDictionary.Count != 0)
+                    {
+                        foreach (var firstname in this.firstNameDictionary)
+                        {
+                            Console.WriteLine(this.firstNameDictionary.Last().Key);
+                            if (record.FirstName == firstname.Key)
+                            {
+                                firstname.Value.Add(record);
+                                break;
+                            }
+                            else if (firstname.Key.Equals(this.firstNameDictionary.Last().Key, StringComparison.Ordinal))
+                            {
+                                if (record.FirstName is null)
+                                {
+                                    throw new ArgumentException("The record is null");
+                                }
+
+                                this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>() { record });
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (record.FirstName is null)
+                        {
+                            throw new ArgumentException("The record is null");
+                        }
+
+                        this.firstNameDictionary.Add(record.FirstName, new List<FileCabinetRecord>() { record });
+                    }
+
+                    if (this.lastNameDictionary.Count != 0)
+                    {
+                        foreach (var lastname in this.lastNameDictionary)
+                        {
+                            if (record.LastName == lastname.Key)
+                            {
+                                lastname.Value.Add(record);
+                                break;
+                            }
+                            else if (lastname.Key.Equals(this.lastNameDictionary.Last().Key, StringComparison.Ordinal))
+                            {
+                                if (record.LastName is null)
+                                {
+                                    throw new ArgumentException("The record is null");
+                                }
+
+                                this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>() { record });
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (record.LastName is null)
+                        {
+                            throw new ArgumentException("The record is null");
+                        }
+
+                        this.lastNameDictionary.Add(record.LastName, new List<FileCabinetRecord>() { record });
+                    }
+
+                    if (this.dateOfBirthDictionary.Count != 0)
+                    {
+                        foreach (var dateOfBirthFromDictionary in this.dateOfBirthDictionary)
+                        {
+                            if (record.DateOfBirth == dateOfBirthFromDictionary.Key)
+                            {
+                                dateOfBirthFromDictionary.Value.Add(record);
+                                break;
+                            }
+                            else if (dateOfBirthFromDictionary.Key.Equals(this.dateOfBirthDictionary.Last().Key))
+                            {
+                                this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>() { record });
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this.dateOfBirthDictionary.Add(record.DateOfBirth, new List<FileCabinetRecord>() { record });
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

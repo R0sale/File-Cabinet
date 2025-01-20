@@ -30,7 +30,7 @@ namespace FileCabinetApp
         {
             if (record != null)
             {
-                string csv = $"{record.FirstName},{record.LastName},{record.DateOfBirth},{record.Age},{record.FavouriteNumeral},{record.Income}";
+                string csv = $"{record.Id},{record.FirstName},{record.LastName},{record.DateOfBirth},{record.Age},{record.FavouriteNumeral},{record.Income}";
                 this.writer.WriteLine(csv);
             }
         }
