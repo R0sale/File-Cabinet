@@ -193,6 +193,8 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -206,6 +208,8 @@ namespace FileCabinetApp
             new string[] { "find", "finds the record by specified parameters : firstname or lastname or dateofbirth", "The 'find' command finds the record by specified parameters : firstname or lastname or dateofbirth" },
             new string[] { "export csv/xml", "exports the data of the service into the csv/xml file", "The 'export csv/xml' command exports the data of the service into the csv/xml file" },
             new string[] { "import csv/xml", "imports the data of the csv/xml file into file depot", "The 'import csv/xml' command imports the data of the csv file into file depot" },
+            new string[] { "remove", "removes the records", "The 'remove' command removes the records" },
+            new string[] { "purge", "removes all the records that are 'removed' from the filing system", "The 'purge' command removes all the records that are 'removed' from the filing system" },
         };
 
         /// <summary>
@@ -742,6 +746,55 @@ namespace FileCabinetApp
 
                     Console.WriteLine($"Import {args[1]}");
                 }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static void Remove(string parameters)
+        {
+            try
+            {
+                string[] args = parameters.Split(' ');
+                int id = -1;
+
+                if (args.Length != 1)
+                {
+                    throw new ArgumentException("The arguments are not correct");
+                }
+
+                id = int.Parse(args[0], new CultureInfo("En-en"));
+
+                if (fileCabinetService is null)
+                {
+                    throw new ArgumentException("The service is null");
+                }
+
+                fileCabinetService.RemoveRecords(id);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"{ex.Message}. The correct format is integer.");
+            }
+        }
+
+        private static void Purge(string parameters)
+        {
+            try
+            {
+                if (!(fileCabinetService is FileCabinetFilesystemService))
+                {
+                    throw new ArgumentException("The service is not file system type");
+                }
+
+                fileCabinetService.PurgeRecords();
+                fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
             }
             catch (ArgumentException e)
             {
