@@ -206,7 +206,10 @@ namespace FileCabinetApp
         /// <returns>The number of records.</returns>
         // pragma because it is the initial code.
 #pragma warning disable CA1024
-        public int GetStat() => this.list.Count;
+        public int GetStat()
+        {
+            return this.list.Count;
+        }
 #pragma warning restore CA1024
         /// <summary>
         /// This method edits the record.
@@ -605,9 +608,22 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>
+        /// A method for FileCabinetFilesystemService.
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not implemented in this class.</exception>
         public void PurgeRecords()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns 0, because the number of deleted records for this instance is 0.
+        /// </summary>
+        /// <returns>0.</returns>
+        public int GetDeletedRecords()
+        {
+            return 0;
         }
     }
 }

@@ -242,7 +242,7 @@ namespace FileCabinetApp
 
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
+                            fileCabinetService = new FileCabinetFilesystemService("cabinet - records.db");
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
@@ -262,7 +262,7 @@ namespace FileCabinetApp
 
                         if (args[index + 1].Equals("file", StringComparison.OrdinalIgnoreCase))
                         {
-                            fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
+                            fileCabinetService = new FileCabinetFilesystemService("cabinet - records.db");
                         }
                         else if (args[index + 1].Equals("memory", StringComparison.OrdinalIgnoreCase))
                         {
@@ -364,8 +364,7 @@ namespace FileCabinetApp
         {
             if (fileCabinetService != null)
             {
-                var recordsCount = Program.fileCabinetService.GetStat();
-                Console.WriteLine($"{recordsCount} record(s).");
+                Console.WriteLine($"{fileCabinetService.GetStat()} record(s). {fileCabinetService.GetDeletedRecords()}");
             }
         }
 
@@ -794,7 +793,6 @@ namespace FileCabinetApp
                 }
 
                 fileCabinetService.PurgeRecords();
-                fileCabinetService = new FileCabinetFilesystemService(new FileStream("cabinet - records.db", FileMode.Open, FileAccess.ReadWrite));
             }
             catch (ArgumentException e)
             {

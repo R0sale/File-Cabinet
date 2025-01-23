@@ -76,5 +76,11 @@
         /// Purges all the records.
         /// </summary>
         void PurgeRecords();
+
+        /// <summary>
+        /// Gets a number of deleted records.
+        /// </summary>
+        /// <returns>A number of deleted records.</returns>
+        int GetDeletedRecords();
     }
 }

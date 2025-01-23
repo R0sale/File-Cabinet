@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -11,17 +12,18 @@ namespace FileCabinetApp
     /// <summary>
     /// A class for filing system.
     /// </summary>
+    #pragma warning disable
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private FileStream fileStream;
-
+    #pragma warning enable
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
         /// </summary>
-        /// <param name="fileStream">FileStream.</param>
-        public FileCabinetFilesystemService(FileStream fileStream)
+        /// <param name="filePath">Path for file.</param>
+        public FileCabinetFilesystemService(string filePath)
         {
-            this.fileStream = fileStream;
+            this.fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
         /// <summary>
@@ -449,8 +451,6 @@ namespace FileCabinetApp
 
                 this.fileStream.Seek(index * recordSize, SeekOrigin.Begin);
                 this.fileStream.Write(BitConverter.GetBytes(1), 0, 2);
-
-                this.fileStream.Flush();
             }
             catch (ArgumentException e)
             {
@@ -458,6 +458,9 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>
+        /// Purging records.
+        /// </summary>
         public void PurgeRecords()
         {
             int counter = 0;
@@ -490,10 +493,39 @@ namespace FileCabinetApp
             }
 
             this.fileStream.Close();
-            File.Delete("cabinet - records.db");
-            File.Move(tempFilePath, "cabinet - records.db");
+            File.Delete(this.fileStream.Name);
+            File.Move(tempFilePath, this.fileStream.Name);
+
+            this.fileStream = new FileStream(this.fileStream.Name, FileMode.Open, FileAccess.ReadWrite);
 
             Console.WriteLine($"Data file processing is completed: {counter} of {numberOfRecords} records were purged.");
+        }
+
+        /// <summary>
+        /// Gets the deleted records from the file.
+        /// </summary>
+        /// <returns>A number of deleted records.</returns>
+        public int GetDeletedRecords()
+        {
+            const int recordSize = 277;
+            int counter = 0;
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            while (this.fileStream.Position < this.fileStream.Length)
+            {
+                byte[] buffer = new byte[recordSize];
+                this.fileStream.Read(buffer, 0, buffer.Length);
+                using (BinaryReader reader = new BinaryReader(new MemoryStream(buffer)))
+                {
+                    short status = reader.ReadInt16();
+
+                    if (status != 0)
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            return counter;
         }
     }
 }
