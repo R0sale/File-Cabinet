@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -49,12 +52,35 @@ namespace FileCabinetApp
 
                 this.validator.ValidateParameters(rec);
 
+                List<int> indexes = new List<int>();
+                if (this.list.Where(elem => elem.Id == 1).ToArray().Length != 0)
+                {
+                    for (int i = 0; i < this.list.Count; i++)
+                    {
+                        for (int j = 0; j < this.list.Count; j++)
+                        {
+                            if (this.list[i].Id + 1 == this.list[j].Id)
+                            {
+                                break;
+                            }
+                            else if (j == this.list.Count - 1)
+                            {
+                                indexes.Add(this.list[i].Id);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    indexes.Add(0);
+                }
+
 #pragma warning disable CA1062
 
                 // all the pragma warnings are made, because the validation is in the ValidateParameters, so there's no need to worry about nullable rec.
                 var record = new FileCabinetRecord
                 {
-                    Id = this.list.Count + 1,
+                    Id = indexes.Min() + 1,
                     FirstName = rec.FirstName,
                     LastName = rec.LastName,
                     DateOfBirth = rec.DateOfBirth,
@@ -133,7 +159,7 @@ namespace FileCabinetApp
                 }
 
 #pragma warning restore CS8604
-                Console.WriteLine($"Record #{this.GetStat()} is created.");
+                Console.WriteLine($"Record #{indexes.Min() + 1} is created.");
                 return record.Id;
             }
             catch (ArgumentException e)
@@ -151,9 +177,24 @@ namespace FileCabinetApp
         {
             List<FileCabinetRecord> result = new List<FileCabinetRecord>();
 
+            List<int> ids = new List<int>();
+
             foreach (var record in this.list)
             {
-                result.Add(record);
+                ids.Add(record.Id);
+            }
+
+            ids.Sort();
+
+            foreach (int id in ids)
+            {
+                for (int i = 0; i < this.list.Count; i++)
+                {
+                    if (id == this.list[i].Id)
+                    {
+                        result.Add(this.list[i]);
+                    }
+                }
             }
 
             return result;
@@ -165,7 +206,10 @@ namespace FileCabinetApp
         /// <returns>The number of records.</returns>
         // pragma because it is the initial code.
 #pragma warning disable CA1024
-        public int GetStat() => this.list.Count;
+        public int GetStat()
+        {
+            return this.list.Count;
+        }
 #pragma warning restore CA1024
         /// <summary>
         /// This method edits the record.
@@ -465,6 +509,121 @@ namespace FileCabinetApp
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Removes records.
+        /// </summary>
+        /// <param name="id">Id of the record.</param>
+        public void RemoveRecords(int id)
+        {
+            try
+            {
+                int maxIndex = 0;
+                int minIndex = 10000;
+                foreach (var record in this.list)
+                {
+                    if (record.Id > maxIndex)
+                    {
+                        maxIndex = record.Id;
+                    }
+                }
+
+                foreach (var record in this.list)
+                {
+                    if (record.Id < minIndex)
+                    {
+                        minIndex = record.Id;
+                    }
+                }
+
+                if (id > maxIndex || id < minIndex)
+                {
+                    throw new ArgumentException($"The record {id} does not exist.");
+                }
+
+                foreach (var record in this.list)
+                {
+                    if (record.Id == id)
+                    {
+                        this.list.Remove(record);
+                        break;
+                    }
+                }
+
+                foreach (var firstName in this.firstNameDictionary)
+                {
+                    foreach (var record in firstName.Value)
+                    {
+                        if (record.Id == id)
+                        {
+                            firstName.Value.Remove(record);
+                            if (firstName.Value.Count == 0)
+                            {
+                                this.firstNameDictionary.Remove(firstName.Key);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var lastName in this.lastNameDictionary)
+                {
+                    foreach (var record in lastName.Value)
+                    {
+                        if (record.Id == id)
+                        {
+                            lastName.Value.Remove(record);
+                            if (lastName.Value.Count == 0)
+                            {
+                                this.firstNameDictionary.Remove(lastName.Key);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var datOfBirth in this.dateOfBirthDictionary)
+                {
+                    foreach (var record in datOfBirth.Value)
+                    {
+                        if (record.Id == id)
+                        {
+                            datOfBirth.Value.Remove(record);
+                            if (datOfBirth.Value.Count == 0)
+                            {
+                                this.dateOfBirthDictionary.Remove(datOfBirth.Key);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// A method for FileCabinetFilesystemService.
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not implemented in this class.</exception>
+        public void PurgeRecords()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns 0, because the number of deleted records for this instance is 0.
+        /// </summary>
+        /// <returns>0.</returns>
+        public int GetDeletedRecords()
+        {
+            return 0;
         }
     }
 }

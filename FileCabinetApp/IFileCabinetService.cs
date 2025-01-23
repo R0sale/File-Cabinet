@@ -65,5 +65,22 @@
         /// </summary>
         /// <param name="snapshot">Snapshot.</param>
         void Restore(FileCabinetServiceSnapshot snapshot);
+
+        /// <summary>
+        /// Is deliting records.
+        /// </summary>
+        /// <param name="id">Id of the record.</param>
+        void RemoveRecords(int id);
+
+        /// <summary>
+        /// Purges all the records.
+        /// </summary>
+        void PurgeRecords();
+
+        /// <summary>
+        /// Gets a number of deleted records.
+        /// </summary>
+        /// <returns>A number of deleted records.</returns>
+        int GetDeletedRecords();
     }
 }

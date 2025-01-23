@@ -37,13 +37,13 @@ namespace FileCabinetApp
                     Namespace = string.Empty,
                 });
 
+                if (this.fileStream is null)
+                {
+                    throw new ArgumentException("The filestream is null");
+                }
+
                 using (this.fileStream)
                 {
-                    if (this.fileStream is null)
-                    {
-                        throw new ArgumentException("The filestream is null");
-                    }
-
                     List<FileCabinetRecord> realRecords = new List<FileCabinetRecord>();
                     using (var reader = XmlReader.Create(this.fileStream))
                     {

@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FileCabinetApp
 {
     /// <summary>
     /// A class for filing system.
     /// </summary>
+    #pragma warning disable
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private FileStream fileStream;
-
+    #pragma warning enable
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
         /// </summary>
-        /// <param name="fileStream">FileStream.</param>
-        public FileCabinetFilesystemService(FileStream fileStream)
+        /// <param name="filePath">Path for file.</param>
+        public FileCabinetFilesystemService(string filePath)
         {
-            this.fileStream = fileStream;
+            this.fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
         /// <summary>
@@ -30,11 +33,36 @@ namespace FileCabinetApp
         /// <returns>An integer of status.</returns>
         public int CreateRecord(ParameterObject rec)
         {
+            List<FileCabinetRecord> records = this.GetRecords().ToList();
+
+            List<int> indexes = new List<int>();
+            if (records.Where(elem => elem.Id == 1).ToArray().Length != 0)
+            {
+                for (int i = 0; i < records.Count; i++)
+                {
+                    for (int j = 0; j < records.Count; j++)
+                    {
+                        if (records[i].Id + 1 == records[j].Id)
+                        {
+                            break;
+                        }
+                        else if (j == records.Count - 1)
+                        {
+                            indexes.Add(records[i].Id);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                indexes.Add(0);
+            }
+
             if (rec is not null)
             {
                 this.fileStream.Write(BitConverter.GetBytes((short)0), 0, 2);
 
-                this.fileStream.Write(BitConverter.GetBytes((this.fileStream.Length / 277) + 1), 0, 4);
+                this.fileStream.Write(BitConverter.GetBytes(indexes.Min() + 1), 0, 4);
                 ComplementaryFunctions.WriteFixedString(this.fileStream, rec.FirstName, 120);
                 ComplementaryFunctions.WriteFixedString(this.fileStream, rec.LastName, 120);
                 this.fileStream.Write(BitConverter.GetBytes(rec.DateOfBirth.Year), 0, 4);
@@ -106,6 +134,8 @@ namespace FileCabinetApp
         /// <returns>The collection of records.</returns>
         public IReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
+            List<FileCabinetRecord> result = new List<FileCabinetRecord>();
+
             List<FileCabinetRecord> records = new List<FileCabinetRecord>();
 
             this.fileStream.Seek(0, SeekOrigin.Begin);
@@ -159,7 +189,27 @@ namespace FileCabinetApp
                 }
             }
 
-            return records;
+            List<int> ids = new List<int>();
+
+            foreach (var record in records)
+            {
+                ids.Add(record.Id);
+            }
+
+            ids.Sort();
+
+            foreach (int id in ids)
+            {
+                for (int i = 0; i < records.Count; i++)
+                {
+                    if (id == records[i].Id)
+                    {
+                        result.Add(records[i]);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -330,6 +380,152 @@ namespace FileCabinetApp
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Removes the records.
+        /// </summary>
+        /// <param name="id">Id of the record.</param>
+        public void RemoveRecords(int id)
+        {
+            try
+            {
+                const int recordSize = 277;
+                List<FileCabinetRecord> records = new List<FileCabinetRecord>();
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+
+                while (this.fileStream.Position < this.fileStream.Length)
+                {
+                    byte[] buffer = new byte[recordSize];
+                    this.fileStream.Read(buffer, 0, recordSize);
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        memoryStream.Write(buffer, 0, recordSize);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        using (BinaryReader reader = new BinaryReader(memoryStream))
+                        {
+                            short status = reader.ReadInt16();
+
+                            int identifier = reader.ReadInt32();
+                            string firstName = ComplementaryFunctions.ReadFixedString(reader, 120);
+                            string lastName = ComplementaryFunctions.ReadFixedString(reader, 120);
+                            int year = reader.ReadInt32();
+                            int month = reader.ReadInt32();
+                            int day = reader.ReadInt32();
+                            DateTime dateOfBirth = new DateTime(year, month, day);
+                            short age = reader.ReadInt16();
+                            char favouriteNumeral = reader.ReadChar();
+                            decimal income = reader.ReadDecimal();
+
+                            FileCabinetRecord record = new FileCabinetRecord()
+                            {
+                                Id = identifier,
+                                FirstName = firstName,
+                                LastName = lastName,
+                                DateOfBirth = dateOfBirth,
+                                Age = age,
+                                FavouriteNumeral = favouriteNumeral,
+                                Income = income,
+                            };
+
+                            records.Add(record);
+                        }
+                    }
+                }
+
+                int index = -1;
+
+                foreach (var record in records)
+                {
+                    if (record.Id == id)
+                    {
+                        index = records.IndexOf(record);
+                    }
+                }
+
+                if (index == -1)
+                {
+                    throw new ArgumentException($"Record {id} does not exist");
+                }
+
+                this.fileStream.Seek(index * recordSize, SeekOrigin.Begin);
+                this.fileStream.Write(BitConverter.GetBytes(1), 0, 2);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Purging records.
+        /// </summary>
+        public void PurgeRecords()
+        {
+            int counter = 0;
+            const int recordSize = 277;
+            int numberOfRecords = (int)this.fileStream.Length / recordSize;
+
+            string tempFilePath = Path.GetTempFileName();
+
+            using (FileStream tempFileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+            {
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+                while (this.fileStream.Position < this.fileStream.Length)
+                {
+                    byte[] buffer = new byte[recordSize];
+                    this.fileStream.Read(buffer, 0, buffer.Length);
+                    using (BinaryReader reader = new BinaryReader(new MemoryStream(buffer)))
+                    {
+                        short status = reader.ReadInt16();
+
+                        if (status != 0)
+                        {
+                            counter++;
+                        }
+                        else
+                        {
+                            tempFileStream.Write(buffer, 0, buffer.Length);
+                        }
+                    }
+                }
+            }
+
+            this.fileStream.Close();
+            File.Delete(this.fileStream.Name);
+            File.Move(tempFilePath, this.fileStream.Name);
+
+            this.fileStream = new FileStream(this.fileStream.Name, FileMode.Open, FileAccess.ReadWrite);
+
+            Console.WriteLine($"Data file processing is completed: {counter} of {numberOfRecords} records were purged.");
+        }
+
+        /// <summary>
+        /// Gets the deleted records from the file.
+        /// </summary>
+        /// <returns>A number of deleted records.</returns>
+        public int GetDeletedRecords()
+        {
+            const int recordSize = 277;
+            int counter = 0;
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            while (this.fileStream.Position < this.fileStream.Length)
+            {
+                byte[] buffer = new byte[recordSize];
+                this.fileStream.Read(buffer, 0, buffer.Length);
+                using (BinaryReader reader = new BinaryReader(new MemoryStream(buffer)))
+                {
+                    short status = reader.ReadInt16();
+
+                    if (status != 0)
+                    {
+                        counter++;
+                    }
+                }
+            }
+
+            return counter;
         }
     }
 }

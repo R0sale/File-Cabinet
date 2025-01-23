@@ -15,11 +15,13 @@ namespace FileCabinetApp
     [XmlRoot("records", Namespace ="")]
     public class Records
     {
+#pragma warning disable
         /// <summary>
         /// Gets the list of the records.
         /// </summary>
         /// <value>A collection of records.</value>
         [XmlElement("record")]
-        public Collection<ClassForDeserialization>? RecordList { get; }
+        public Collection<ClassForDeserialization>? RecordList { get; set; }
+#pragma warning enable
     }
 }
