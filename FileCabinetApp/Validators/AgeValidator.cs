@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class AgeValidator
+    public class AgeValidator : IRecordValidator
     {
         private short minAge;
 

@@ -10,26 +10,19 @@ namespace FileCabinetApp
     /// <summary>
     /// Strategy class for validating data by custom rules.
     /// </summary>
-    public class CustomValidator : IRecordValidator
+    public class CustomValidator : CompositeValidator, IRecordValidator
     {
-        /// <summary>
-        /// Method for validating parameters.
-        /// </summary>
-        /// <param name="rec">The record.</param>
-        /// <exception cref="ArgumentException">Exception for the custim rules.</exception>
-        public void ValidateParameters(ParameterObject rec)
-        {
-            if (rec == null)
+        public CustomValidator()
+            : base(new IRecordValidator[]
             {
-                throw new ArgumentException("The record is null");
-            }
-
-            new FirstNameValidator(2, 60).ValidateParameters(rec);
-            new LastNameValidator(2, 60).ValidateParameters(rec);
-            new DateOfBirthValidator(new DateTime(01 / 01 / 1950), DateTime.Now).ValidateParameters(rec);
-            new AgeValidator(0, 20).ValidateParameters(rec);
-            new FavouriteNumeralValidator('0', '5').ValidateParameters(rec);
-            new IncomeValidator(0, 500).ValidateParameters(rec);
+                new FirstNameValidator(2, 60),
+                new LastNameValidator(2, 60),
+                new DateOfBirthValidator(new DateTime(01 / 01 / 1950), DateTime.Now),
+                new AgeValidator(0, 20),
+                new FavouriteNumeralValidator('0', '5'),
+                new IncomeValidator(0, 500),
+            })
+        {
         }
     }
 }
