@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileCabinetApp.CommandHandlers
+namespace FileCabinetApp
 {
     public abstract class CommandHandlerBase : ICommandHandler
     {
@@ -15,7 +15,6 @@ namespace FileCabinetApp.CommandHandlers
             this.nextHandler = commandHandler;
         }
 
-        
         public virtual void Handle(AppCommandRequest request)
         {
             if (this.nextHandler != null)
