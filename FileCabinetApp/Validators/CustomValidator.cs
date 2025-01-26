@@ -24,12 +24,12 @@ namespace FileCabinetApp
                 throw new ArgumentException("The record is null");
             }
 
-            new CustomFirstNameValidator().ValidateParameters(rec);
-            new CustomLastNameValidator().ValidateParameters(rec);
-            new CustomDateOfBirthValidator().ValidateParameters(rec);
-            new CustomFavouriteNumeralValidator().ValidateParameters(rec);
-            new CustomAgeValidator().ValidateParameters(rec);
-            new CustomIncomeValidator().ValidateParameters(rec);
+            new FirstNameValidator(2, 60).ValidateParameters(rec);
+            new LastNameValidator(2, 60).ValidateParameters(rec);
+            new DateOfBirthValidator(new DateTime(01 / 01 / 1950), DateTime.Now).ValidateParameters(rec);
+            new AgeValidator(0, 20).ValidateParameters(rec);
+            new FavouriteNumeralValidator('0', '5').ValidateParameters(rec);
+            new IncomeValidator(0, 500).ValidateParameters(rec);
         }
     }
 }

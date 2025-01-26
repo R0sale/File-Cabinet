@@ -6,11 +6,21 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class CustomAgeValidator : IRecordValidator
+    public class AgeValidator
     {
+        private short minAge;
+
+        private short maxAge;
+
+        public AgeValidator(short minAge, short maxAge)
+        {
+            this.minAge = minAge;
+            this.maxAge = maxAge;
+        }
+
         public void ValidateParameters(ParameterObject rec)
         {
-            if (rec.Age > 20 || rec.Age < 0)
+            if (rec.Age > this.maxAge || rec.Age < this.minAge)
             {
                 throw new ArgumentException("Exception because of the incorrect age format");
             }
