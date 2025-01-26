@@ -23,34 +23,59 @@ namespace FileCabinetApp
                 throw new ArgumentException("The record is null");
             }
 
-            if (string.IsNullOrWhiteSpace(rec.FirstName) || rec.FirstName.Length < 2 || rec.FirstName.Length > 60)
+            this.ValidateFirstName(rec.FirstName);
+            this.ValidateLastName(rec.LastName);
+            this.ValidateDateOfBirth(rec.DateOfBirth);
+            this.ValidateFavouriteNumeral(rec.FavouriteNumeral);
+            this.ValidateAge(rec.Age);
+            this.ValidateIncome(rec.Income);
+        }
+
+        private void ValidateFirstName(string firstname)
+        {
+            if (string.IsNullOrWhiteSpace(firstname) || firstname.Length < 2 || firstname.Length > 60)
             {
                 throw new ArgumentException("Exception because of the incorrect first name format");
             }
+        }
 
-            if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < 2 || rec.LastName.Length > 60)
+        private void ValidateLastName(string lastname)
+        {
+            if (string.IsNullOrWhiteSpace(lastname) || lastname.Length < 2 || lastname.Length > 60)
             {
-                throw new ArgumentException("Exception because of the incorrect last name format");
+                throw new ArgumentException("Exception because of the incorrect first name format");
             }
+        }
 
-            if (rec.DateOfBirth.CompareTo(DateTime.Now) >= 0 || rec.DateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
+        private void ValidateDateOfBirth(DateTime dateOfBirth)
+        {
+            if (dateOfBirth.CompareTo(DateTime.Now) >= 0 || dateOfBirth.CompareTo(new DateTime(01 / 01 / 1950)) <= 0)
             {
                 throw new ArgumentException("Exception because of the incorrect date of birth format");
             }
+        }
 
-            if (rec.FavouriteNumeral > '9' || rec.FavouriteNumeral < '0')
+        private void ValidateFavouriteNumeral(char favouriteNumeral)
+        {
+            if (favouriteNumeral > '9' || favouriteNumeral < '0')
             {
                 throw new ArgumentException("Exception because of the incorrect favourite numeral format");
             }
+        }
 
-            if (rec.Age > 100 || rec.Age < 0)
-            {
-                throw new ArgumentException("Exception because of the incorrect age format");
-            }
-
-            if (rec.Income > 2000000 || rec.Income < 350)
+        private void ValidateIncome(decimal income)
+        {
+            if (income > 2000000 || income < 350)
             {
                 throw new ArgumentException("Exception because of the incorrect income format");
+            }
+        }
+
+        private void ValidateAge(short age)
+        {
+            if (age > 100 || age < 0)
+            {
+                throw new ArgumentException("Exception because of the incorrect age format");
             }
         }
     }
