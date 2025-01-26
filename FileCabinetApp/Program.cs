@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Windows.Markup;
@@ -71,11 +72,11 @@ namespace FileCabinetApp
                         {
                             if (typeOfTheRules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                             {
-                                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
+                                fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateCustom());
                             }
                             else
                             {
-                                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                                fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateDefault());
                             }
                         }
                     }
@@ -91,22 +92,22 @@ namespace FileCabinetApp
                         {
                             if (typeOfTheRules.Equals("custom", StringComparison.OrdinalIgnoreCase))
                             {
-                                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
+                                fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateCustom());
                             }
                             else
                             {
-                                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                                fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateDefault());
                             }
                         }
                     }
                     else
                     {
-                        fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                        fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateDefault());
                     }
                 }
                 else
                 {
-                    fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
+                    fileCabinetService = new FileCabinetMemoryService(new ValidatorBuilder().CreateDefault());
                 }
             }
 

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class CompositeValidator
+    public class CompositeValidator : IRecordValidator
     {
         private List<IRecordValidator> validators;
 
-        protected CompositeValidator(IEnumerable<IRecordValidator> validators)
+        public CompositeValidator(IEnumerable<IRecordValidator> validators)
         {
             this.validators = validators.ToList();
         }
