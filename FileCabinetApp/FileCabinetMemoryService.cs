@@ -424,7 +424,6 @@ namespace FileCabinetApp
                     {
                         foreach (var firstname in this.firstNameDictionary)
                         {
-                            Console.WriteLine(this.firstNameDictionary.Last().Key);
                             if (record.FirstName == firstname.Key)
                             {
                                 firstname.Value.Add(record);
