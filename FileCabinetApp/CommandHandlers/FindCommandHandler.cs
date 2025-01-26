@@ -10,10 +10,16 @@ namespace FileCabinetApp.CommandHandlers
 {
     public class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordPrinter printer;
+        private Action<IEnumerable<FileCabinetRecord>> printer;
 
-        public FindCommandHandler(IFileCabinetService service, IRecordPrinter printer)
-            : base(service)
+        //public FindCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+        //    : base(service)
+        //{
+        //    this.printer = printer;
+        //}
+
+        public FindCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
+            :base(service)
         {
             this.printer = printer;
         }
@@ -28,7 +34,7 @@ namespace FileCabinetApp.CommandHandlers
             if (request.Command.Equals("find", StringComparison.Ordinal))
             {
                 IEnumerable<FileCabinetRecord> records = this.Find(request.Parameters);
-                this.printer.Print(records);
+                this.printer(records);
             }
             else
             {

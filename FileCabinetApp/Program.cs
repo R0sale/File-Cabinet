@@ -167,10 +167,10 @@ namespace FileCabinetApp
                 var helpHandler = new HelpCommandHandler();
                 var createHandler = new CreateCommandHandler(fileCabinetService);
                 var editHandler = new EditCommandHandler(fileCabinetService);
-                var listHandler = new ListCommandHandler(fileCabinetService, recordPrinter);
+                var listHandler = new ListCommandHandler(fileCabinetService, DefaultRecordPrint);
                 var importHandler = new ImportCommandHandler(fileCabinetService);
                 var exportHandler = new ExportCommandHandler(fileCabinetService);
-                var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
+                var findHandler = new FindCommandHandler(fileCabinetService, DefaultRecordPrint);
                 var statHandler = new StatCommandHandler(fileCabinetService);
                 var removeHandler = new RemoveCommandHandler(fileCabinetService);
                 var purgeHandler = new PurgeCommandHandler(fileCabinetService);
@@ -200,6 +200,14 @@ namespace FileCabinetApp
         private static void ExitTheApplication(bool state)
         {
             isRunning = state;
+        }
+
+        private static void DefaultRecordPrint(IEnumerable<FileCabinetRecord> records)
+        {
+            foreach (var record in records)
+            {
+                Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
+            }
         }
     }
 }

@@ -9,9 +9,15 @@ namespace FileCabinetApp
 {
     public class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private IRecordPrinter printer;
+        private Action<IEnumerable<FileCabinetRecord>> printer;
 
-        public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+        //public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+        //    : base(service)
+        //{
+        //    this.printer = printer;
+        //}
+
+        public ListCommandHandler(IFileCabinetService service, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(service)
         {
             this.printer = printer;
@@ -27,7 +33,7 @@ namespace FileCabinetApp
             if (request.Command.Equals("list", StringComparison.Ordinal))
             {
                 IEnumerable<FileCabinetRecord> records = this.List(request.Parameters);
-                this.printer.Print(records);
+                this.printer(records);
             }
             else
             {
