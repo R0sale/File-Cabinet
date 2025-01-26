@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class ListCommandHandler : CommandHandlerBase
+    public class ListCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
+
         public override void Handle(AppCommandRequest request)
         {
             if (request == null)
@@ -28,9 +30,9 @@ namespace FileCabinetApp
 
         private void List(string parameters)
         {
-            if (Program.fileCabinetService != null)
+            if (this.service != null)
             {
-                IReadOnlyCollection<FileCabinetRecord> records = Program.fileCabinetService.GetRecords();
+                IReadOnlyCollection<FileCabinetRecord> records = this.service.GetRecords();
                 foreach (var record in records)
                 {
                     Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");

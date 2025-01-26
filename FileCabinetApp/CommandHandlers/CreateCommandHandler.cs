@@ -1,5 +1,4 @@
-﻿using FileCabinetApp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class CreateCommandHandler : CommandHandlerBase
+    public class CreateCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
+
         public override void Handle(AppCommandRequest request)
         {
             if (request == null)
@@ -60,9 +61,9 @@ namespace FileCabinetApp
                     Income = income,
                 };
 
-                if (Program.fileCabinetService != null)
+                if (this.service != null)
                 {
-                    counter = Program.fileCabinetService.CreateRecord(obj);
+                    counter = this.service.CreateRecord(obj);
                 }
             }
             while (counter < 1);

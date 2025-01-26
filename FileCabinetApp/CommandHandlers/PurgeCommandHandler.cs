@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class PurgeCommandHandler : CommandHandlerBase
+    public class PurgeCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -29,12 +30,12 @@ namespace FileCabinetApp.CommandHandlers
         {
             try
             {
-                if (!(Program.fileCabinetService is FileCabinetFilesystemService))
+                if (!(this.service is FileCabinetFilesystemService))
                 {
                     throw new ArgumentException("The service is not file system type");
                 }
 
-                Program.fileCabinetService.PurgeRecords();
+                this.service.PurgeRecords();
             }
             catch (ArgumentException e)
             {

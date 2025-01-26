@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class EditCommandHandler : CommandHandlerBase
+    public class EditCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -45,9 +46,9 @@ namespace FileCabinetApp
                     return;
                 }
 
-                if (Program.fileCabinetService != null)
+                if (this.service != null)
                 {
-                    if (numberOfTheRecord <= Program.fileCabinetService.GetStat())
+                    if (numberOfTheRecord <= this.service.GetStat())
                     {
                         Console.Write("First name: ");
                         string? firstname = ParametersReader.ReadInput(ParametersReader.StringConverter, ParametersReader.StringValidator);
@@ -77,7 +78,7 @@ namespace FileCabinetApp
                             Income = income,
                         };
 
-                        counter = Program.fileCabinetService.EditRecord(numberOfTheRecord, obj);
+                        counter = this.service.EditRecord(numberOfTheRecord, obj);
                     }
                     else
                     {

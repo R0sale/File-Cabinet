@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class RemoveCommandHandler : CommandHandlerBase
+    public class RemoveCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -40,12 +41,12 @@ namespace FileCabinetApp.CommandHandlers
 
                 id = int.Parse(args[0], new CultureInfo("En-en"));
 
-                if (Program.fileCabinetService is null)
+                if (this.service is null)
                 {
                     throw new ArgumentException("The service is null");
                 }
 
-                Program.fileCabinetService.RemoveRecords(id);
+                this.service.RemoveRecords(id);
             }
             catch (ArgumentException e)
             {

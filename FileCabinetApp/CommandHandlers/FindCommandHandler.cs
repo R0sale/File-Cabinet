@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class FindCommandHandler : CommandHandlerBase
+    public class FindCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -36,14 +37,14 @@ namespace FileCabinetApp.CommandHandlers
                     throw new ArgumentException("Please write 2 arguments");
                 }
 
-                if (Program.fileCabinetService == null)
+                if (this.service == null)
                 {
                     throw new ArgumentException("The service is null");
                 }
 
                 if (args[0].Equals("firstname", StringComparison.OrdinalIgnoreCase))
                 {
-                    IReadOnlyCollection<FileCabinetRecord> records = Program.fileCabinetService.FindByFirstName(args[1]);
+                    IReadOnlyCollection<FileCabinetRecord> records = this.service.FindByFirstName(args[1]);
                     if (records != null)
                     {
                         foreach (FileCabinetRecord record in records)
@@ -58,7 +59,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else if (args[0].Equals("lastname", StringComparison.OrdinalIgnoreCase))
                 {
-                    IReadOnlyCollection<FileCabinetRecord> records = Program.fileCabinetService.FindByLastName(args[1]);
+                    IReadOnlyCollection<FileCabinetRecord> records = this.service.FindByLastName(args[1]);
                     if (records != null)
                     {
                         foreach (FileCabinetRecord record in records)
@@ -76,7 +77,7 @@ namespace FileCabinetApp.CommandHandlers
                     DateTime dateOfBirth;
                     if (DateTime.TryParseExact(args[1], "yyyy-MMM-dd", new CultureInfo("En-en"), DateTimeStyles.None, out dateOfBirth))
                     {
-                        IReadOnlyCollection<FileCabinetRecord> records = Program.fileCabinetService.FindByDateOfBirth(dateOfBirth);
+                        IReadOnlyCollection<FileCabinetRecord> records = this.service.FindByDateOfBirth(dateOfBirth);
 
                         if (records != null)
                         {

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class ExportCommandHandler : CommandHandlerBase
+    public class ExportCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -57,12 +58,12 @@ namespace FileCabinetApp.CommandHandlers
 
                     using (StreamWriter writer = new StreamWriter(args[1]))
                     {
-                        if (Program.fileCabinetService is null)
+                        if (this.service is null)
                         {
                             throw new ArgumentException("the fileCabinetService is null");
                         }
 
-                        FileCabinetServiceSnapshot snapshot = Program.fileCabinetService.MakeSnapshot();
+                        FileCabinetServiceSnapshot snapshot = this.service.MakeSnapshot();
 
                         snapshot.SaveToCsv(writer);
                     }
@@ -88,12 +89,12 @@ namespace FileCabinetApp.CommandHandlers
 
                     using (StreamWriter writer = new StreamWriter(args[1]))
                     {
-                        if (Program.fileCabinetService is null)
+                        if (this.service is null)
                         {
                             throw new ArgumentException("the fileCabinetService is null");
                         }
 
-                        FileCabinetServiceSnapshot snapshot = Program.fileCabinetService.MakeSnapshot();
+                        FileCabinetServiceSnapshot snapshot = this.service.MakeSnapshot();
 
                         snapshot.SaveToXml(writer);
                     }

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class ImportCommandHandler : CommandHandlerBase
+    public class ImportCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -52,12 +53,12 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         FileCabinetServiceSnapshot snapshot = new FileCabinetServiceSnapshot(Array.Empty<FileCabinetRecord>());
                         snapshot.LoadFromCsv(reader);
-                        if (Program.fileCabinetService == null)
+                        if (this.service == null)
                         {
                             throw new ArgumentException("Service is null");
                         }
 
-                        Program.fileCabinetService.Restore(snapshot);
+                        this.service.Restore(snapshot);
                     }
 
                     Console.WriteLine($"Import {args[1]}");
@@ -80,12 +81,12 @@ namespace FileCabinetApp.CommandHandlers
 
                         snapshot.LoadFromXml(stream);
 
-                        if (Program.fileCabinetService is null)
+                        if (this.service is null)
                         {
                             throw new ArgumentException("The service is null");
                         }
 
-                        Program.fileCabinetService.Restore(snapshot);
+                        this.service.Restore(snapshot);
                     }
 
                     Console.WriteLine($"Import {args[1]}");

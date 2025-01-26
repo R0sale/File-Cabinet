@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class StatCommandHandler : CommandHandlerBase
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
+    /// </summary>
+    /// <param name="service"></param>
+    public class StatCommandHandler(IFileCabinetService service)
+        : ServiceCommandHandlerBase(service)
     {
         public override void Handle(AppCommandRequest request)
         {
@@ -27,9 +32,9 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Stat(string parameters)
         {
-            if (Program.fileCabinetService != null)
+            if (this.service != null)
             {
-                Console.WriteLine($"{Program.fileCabinetService.GetStat()} record(s). {Program.fileCabinetService.GetDeletedRecords()}");
+                Console.WriteLine($"{this.service.GetStat()} record(s). {this.service.GetDeletedRecords()}");
             }
         }
     }
