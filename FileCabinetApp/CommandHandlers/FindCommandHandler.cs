@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,16 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp.CommandHandlers
 {
-    public class FindCommandHandler(IFileCabinetService service)
-        : ServiceCommandHandlerBase(service)
+    public class FindCommandHandler : ServiceCommandHandlerBase
     {
+        private IRecordPrinter printer;
+
+        public FindCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+            : base(service)
+        {
+            this.printer = printer;
+        }
+
         public override void Handle(AppCommandRequest request)
         {
             if (request == null)
@@ -19,7 +27,8 @@ namespace FileCabinetApp.CommandHandlers
 
             if (request.Command.Equals("find", StringComparison.Ordinal))
             {
-                this.Find(request.Parameters);
+                IEnumerable<FileCabinetRecord> records = this.Find(request.Parameters);
+                this.printer.Print(records);
             }
             else
             {
@@ -27,7 +36,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private void Find(string arguments)
+        private IReadOnlyCollection<FileCabinetRecord> Find(string arguments)
         {
             try
             {
@@ -47,10 +56,7 @@ namespace FileCabinetApp.CommandHandlers
                     IReadOnlyCollection<FileCabinetRecord> records = this.service.FindByFirstName(args[1]);
                     if (records != null)
                     {
-                        foreach (FileCabinetRecord record in records)
-                        {
-                            Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)}");
-                        }
+                        return records;
                     }
                     else
                     {
@@ -62,10 +68,7 @@ namespace FileCabinetApp.CommandHandlers
                     IReadOnlyCollection<FileCabinetRecord> records = this.service.FindByLastName(args[1]);
                     if (records != null)
                     {
-                        foreach (FileCabinetRecord record in records)
-                        {
-                            Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo)}");
-                        }
+                        return records;
                     }
                     else
                     {
@@ -81,10 +84,7 @@ namespace FileCabinetApp.CommandHandlers
 
                         if (records != null)
                         {
-                            foreach (FileCabinetRecord record in records)
-                            {
-                                Console.WriteLine($"#{record.Id} {record.FirstName} {record.LastName} {record.DateOfBirth.ToString("yyyy-MMM-dd", new CultureInfo("En-en"))}");
-                            }
+                            return records;
                         }
                         else
                         {
@@ -104,6 +104,7 @@ namespace FileCabinetApp.CommandHandlers
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
+                return Array.Empty<FileCabinetRecord>();
             }
         }
     }

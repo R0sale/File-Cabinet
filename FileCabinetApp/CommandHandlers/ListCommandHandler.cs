@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class ListCommandHandler(IFileCabinetService service)
-        : ServiceCommandHandlerBase(service)
+    public class ListCommandHandler : ServiceCommandHandlerBase
     {
+        private IRecordPrinter printer;
+
+        public ListCommandHandler(IFileCabinetService service, IRecordPrinter printer)
+            : base(service)
+        {
+            this.printer = printer;
+        }
 
         public override void Handle(AppCommandRequest request)
         {
@@ -20,7 +26,8 @@ namespace FileCabinetApp
 
             if (request.Command.Equals("list", StringComparison.Ordinal))
             {
-                this.List(request.Parameters);
+                IEnumerable<FileCabinetRecord> records = this.List(request.Parameters);
+                this.printer.Print(records);
             }
             else
             {
@@ -28,15 +35,16 @@ namespace FileCabinetApp
             }
         }
 
-        private void List(string parameters)
+        private IReadOnlyCollection<FileCabinetRecord> List(string parameters)
         {
             if (this.service != null)
             {
                 IReadOnlyCollection<FileCabinetRecord> records = this.service.GetRecords();
-                foreach (var record in records)
-                {
-                    Console.WriteLine($"#{record.Id}, {record.FirstName}, {record.LastName}, {record.DateOfBirth.ToString("yyyy-MMM-dd", DateTimeFormatInfo.InvariantInfo)}, {record.Age}, {record.FavouriteNumeral}, {record.Income}");
-                }
+                return records;
+            }
+            else
+            {
+                return Array.Empty<FileCabinetRecord>();
             }
         }
     }

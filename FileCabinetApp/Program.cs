@@ -162,13 +162,15 @@ namespace FileCabinetApp
                     throw new ArgumentNullException("The service is null");
                 }
 
+                var recordPrinter = new DefaultRecordPrinter();
+
                 var helpHandler = new HelpCommandHandler();
                 var createHandler = new CreateCommandHandler(fileCabinetService);
                 var editHandler = new EditCommandHandler(fileCabinetService);
-                var listHandler = new ListCommandHandler(fileCabinetService);
+                var listHandler = new ListCommandHandler(fileCabinetService, recordPrinter);
                 var importHandler = new ImportCommandHandler(fileCabinetService);
                 var exportHandler = new ExportCommandHandler(fileCabinetService);
-                var findHandler = new FindCommandHandler(fileCabinetService);
+                var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
                 var statHandler = new StatCommandHandler(fileCabinetService);
                 var removeHandler = new RemoveCommandHandler(fileCabinetService);
                 var purgeHandler = new PurgeCommandHandler(fileCabinetService);

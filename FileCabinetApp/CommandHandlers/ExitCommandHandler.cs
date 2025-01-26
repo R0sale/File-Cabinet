@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace FileCabinetApp
 {
-    public class ExitCommandHandler : CommandHandlerBase
+    public class ExitCommandHandler(Action<bool> exitingApp)
+        : CommandHandlerBase
     {
-        private Action<bool> exit;
-
-        public ExitCommandHandler(Action<bool> exitingApp)
-        {
-            this.exit = exitingApp;
-        }
+        private readonly Action<bool> exit = exitingApp;
 
         public override void Handle(AppCommandRequest request)
         {
