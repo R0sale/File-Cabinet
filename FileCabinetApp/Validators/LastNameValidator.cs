@@ -8,19 +8,19 @@ namespace FileCabinetApp
 {
     public class LastNameValidator : IRecordValidator
     {
-        private int minLength;
+        public int MinLength {  get; set; }
 
-        private int maxLength;
+        public int MaxLength { get; set; }
 
         public LastNameValidator(int minLength, int maxLength)
         {
-            this.minLength = minLength;
-            this.maxLength = maxLength;
+            this.MinLength = minLength;
+            this.MaxLength = maxLength;
         }
 
         public void ValidateParameters(ParameterObject rec)
         {
-            if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < this.minLength || rec.LastName.Length > this.maxLength)
+            if (string.IsNullOrWhiteSpace(rec.LastName) || rec.LastName.Length < this.MinLength || rec.LastName.Length > this.MaxLength)
             {
                 throw new ArgumentException("Exception because of the incorrect first name format");
             }

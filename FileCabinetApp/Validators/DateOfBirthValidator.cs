@@ -8,19 +8,19 @@ namespace FileCabinetApp
 {
     public class DateOfBirthValidator : IRecordValidator
     {
-        private DateTime from;
+        public DateTime From { get; set; }
 
-        private DateTime to;
+        public DateTime To { get; set; }
 
         public DateOfBirthValidator(DateTime from, DateTime to)
         {
-            this.from = from;
-            this.to = to;
+            this.From = from;
+            this.To = to;
         }
 
         public void ValidateParameters(ParameterObject rec)
         {
-            if (rec.DateOfBirth.CompareTo(this.to) >= 0 || rec.DateOfBirth.CompareTo(this.from) <= 0)
+            if (rec.DateOfBirth.CompareTo(this.To) >= 0 || rec.DateOfBirth.CompareTo(this.From) <= 0)
             {
                 throw new ArgumentException("Exception because of the incorrect date of birth format");
             }

@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Windows.Markup;
 using System.Xml.Serialization;
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.Validators;
+using Microsoft.Extensions.Configuration;
 
 namespace FileCabinetApp
 {
@@ -161,8 +163,6 @@ namespace FileCabinetApp
                 {
                     throw new ArgumentNullException("The service is null");
                 }
-
-                var recordPrinter = new DefaultRecordPrinter();
 
                 var helpHandler = new HelpCommandHandler();
                 var createHandler = new CreateCommandHandler(fileCabinetService);
